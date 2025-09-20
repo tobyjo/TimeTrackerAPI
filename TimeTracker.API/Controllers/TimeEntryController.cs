@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using TimeTracker.API.Services;
+using TimeTracker.API.Models;
+using AutoMapper;
 
 namespace TimeTracker.API.Controllers
 {
@@ -6,47 +9,43 @@ namespace TimeTracker.API.Controllers
     [Route("api/timeentry")]
     public class TimeEntryController : ControllerBase
     {
-        private readonly TimeTrackerDataStore _store;
+        private readonly ITimeTrackerRepository timeTrackerRepository;
+        private readonly IMapper mapper;
 
-        public TimeEntryController(TimeTrackerDataStore store)
+        public TimeEntryController(ITimeTrackerRepository timeTrackerRepository, IMapper mapper)
         {
-            _store = store;
+            this.timeTrackerRepository = timeTrackerRepository ?? throw new ArgumentNullException(nameof(timeTrackerRepository));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         //[HttpGet]
         //public IEnumerable<TimeEntryDto> Get() => _store.Data.TimeEntry;
 
         [HttpGet]
-        public ActionResult<IEnumerable<TimeEntryWithDetailsDto>> Get([FromQuery] int? userId)
+        public async Task<ActionResult<IEnumerable<TimeEntryWithDetailsDto>>> Get([FromQuery] int userId)
         {
-            var entries = _store.Data.TimeEntry;
-            if (userId.HasValue)
-                entries = entries.Where(e => e.UserID == userId.Value).ToList();
+            //var entries = _store.Data.TimeEntry;
+            var entries = await timeTrackerRepository.GetTimeEntriesForUserAsync(userId, true);
+            return Ok(mapper.Map<IEnumerable<TimeEntryWithDetailsDto>>(entries));
 
-        
-
-            var result = entries.Select(e =>
+            /*
+            var results = new List<TimeEntryWithDetailsDto>();
+            foreach(var entry in entries)
             {
-                // Find the matching project by id
-                var project = _store.Data.Project.FirstOrDefault(p => p.ID == e.ProjectID);
-
-                // Find the matching segment type by id
-                var segmentType = _store.Data.SegmentType.FirstOrDefault(s => s.ID == e.SegmentTypeID);
-
-
-                return new TimeEntryWithDetailsDto
+                results.Add(new TimeEntryWithDetailsDto
                 {
-                    StartDateTime = e.StartDateTime,
-                    EndDateTime = e.EndDateTime,
-                    UserID = e.UserID,
-                    ProjectCode = project?.Code ?? string.Empty,
-                    ProjectDescription = project?.Description ?? string.Empty,
-                    SegmentTypeName = segmentType?.Name ?? string.Empty
-                };
-            }).ToList();
+                    StartDateTime = entry.StartDateTime,
+                    EndDateTime = entry.EndDateTime,
+                    UserID = entry.UserId,
+                    ProjectCode = entry.Project.Code,
+                    ProjectDescription = entry.Project.Description,
+                    SegmentTypeName = entry.SegmentType.Name
+                });
+            }
+               return Ok(results);
+            */
 
-            return Ok(result);
         }
-        
+
     }
 }
