@@ -3,7 +3,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TimeTracker.API.DbContexts;
 
@@ -12,11 +11,9 @@ using TimeTracker.API.DbContexts;
 namespace TimeTracker.API.Migrations
 {
     [DbContext(typeof(TimeTrackerContext))]
-    [Migration("20250910140351_InitialDataSeed")]
-    partial class InitialDataSeed
+    partial class TimeTrackerContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +40,12 @@ namespace TimeTracker.API.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TeamId");
 
                     b.ToTable("Projects");
 
@@ -52,13 +54,15 @@ namespace TimeTracker.API.Migrations
                         {
                             Id = 1,
                             Code = "BPC.001",
-                            Description = "Berkshire Primary Care 001"
+                            Description = "Berkshire Primary Care 001",
+                            TeamId = 1
                         },
                         new
                         {
                             Id = 2,
                             Code = "BP",
-                            Description = "ARRS"
+                            Description = "ARRS",
+                            TeamId = 1
                         });
                 });
 
@@ -94,6 +98,31 @@ namespace TimeTracker.API.Migrations
                         {
                             Id = 3,
                             Name = "Planning"
+                        });
+                });
+
+            modelBuilder.Entity("TimeTracker.API.Entities.Team", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("TeamName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Teams");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            TeamName = "BPC"
                         });
                 });
 
@@ -173,12 +202,17 @@ namespace TimeTracker.API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TeamId");
 
                     b.ToTable("Users");
 
@@ -187,14 +221,27 @@ namespace TimeTracker.API.Migrations
                         {
                             Id = 1,
                             FullName = "Kirstine Hall",
+                            TeamId = 1,
                             UserName = "kirstine"
                         },
                         new
                         {
                             Id = 2,
                             FullName = "Toby Jones",
+                            TeamId = 1,
                             UserName = "toby"
                         });
+                });
+
+            modelBuilder.Entity("TimeTracker.API.Entities.Project", b =>
+                {
+                    b.HasOne("TimeTracker.API.Entities.Team", "Team")
+                        .WithMany("Projects")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("TimeTracker.API.Entities.TimeEntry", b =>
@@ -224,6 +271,17 @@ namespace TimeTracker.API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("TimeTracker.API.Entities.User", b =>
+                {
+                    b.HasOne("TimeTracker.API.Entities.Team", "Team")
+                        .WithMany("Users")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("TimeTracker.API.Entities.Project", b =>
                 {
                     b.Navigation("TimeEntries");
@@ -232,6 +290,13 @@ namespace TimeTracker.API.Migrations
             modelBuilder.Entity("TimeTracker.API.Entities.SegmentType", b =>
                 {
                     b.Navigation("TimeEntries");
+                });
+
+            modelBuilder.Entity("TimeTracker.API.Entities.Team", b =>
+                {
+                    b.Navigation("Projects");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("TimeTracker.API.Entities.User", b =>

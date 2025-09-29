@@ -20,7 +20,7 @@ namespace TimeTracker.API.Controllers
         {
             var projects = _store.Data.Project;
             if (projectId.HasValue)
-                projects = projects.Where(e => e.ID == projectId.Value).ToList();
+                projects = projects.Where(e => e.Id == projectId.Value).ToList();
 
 
 

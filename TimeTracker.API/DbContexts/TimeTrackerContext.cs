@@ -12,6 +12,9 @@ namespace TimeTracker.API.DbContexts
         public DbSet<Project> Projects { get; set; }
 
         public DbSet<User> Users { get; set; }
+
+        public DbSet<Team> Teams { get; set; }
+
         public TimeTrackerContext(DbContextOptions<TimeTrackerContext> options) : base(options)
         {
         }
@@ -43,20 +46,27 @@ namespace TimeTracker.API.DbContexts
                    {Id = 3}
                 );
 
-
-
             modelBuilder.Entity<Project>()
               .HasData(new Project("BPC.001")
               {
                   Id = 1,
-                  Description = "Berkshire Primary Care 001"
+                  Description = "Berkshire Primary Care 001",
+                  TeamId = 1
               },
               new Project("BP")
               {
                   Id = 2,
-                  Description = "ARRS"
+                  Description = "ARRS",
+                  TeamId = 1
               }
               );
+
+            modelBuilder.Entity<Team>()
+             .HasData(new Team("BPC")
+             {
+                 Id = 1
+             }
+             );
 
             modelBuilder.Entity<SegmentType>()
              .HasData(new SegmentType("Meeting")
@@ -76,13 +86,32 @@ namespace TimeTracker.API.DbContexts
             modelBuilder.Entity<User>()
            .HasData(new User("kirstine", "Kirstine Hall")
            {
-               Id = 1
+               Id = 1,
+               TeamId = 1
            },
            new User("toby", "Toby Jones")
            {
-               Id = 2
+               Id = 2,
+               TeamId = 1
            }
            );
+
+
+            // Stop warning about possible cycles or multiple cascade paths
+            // When deleting a Team it wont automatically delete the associated Projects and Users
+            // Restrict delete for Team -> Projects
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.Team)
+                .WithMany(t => t.Projects)
+                .HasForeignKey(p => p.TeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Restrict delete for Team -> Users
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Team)
+                .WithMany(t => t.Users)
+                .HasForeignKey(u => u.TeamId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

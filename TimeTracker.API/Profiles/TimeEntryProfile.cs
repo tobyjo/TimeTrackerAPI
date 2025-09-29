@@ -9,6 +9,7 @@ namespace TimeTracker.API.Profiles
         {
             // From database to DTO
             CreateMap<Entities.TimeEntry, Models.TimeEntryWithDetailsDto>();
+ 
 
 
 
