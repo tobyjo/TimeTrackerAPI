@@ -6,9 +6,14 @@ namespace TimeTracker.API.Services
     {
         Task<IEnumerable<Team>> GetTeamsAsync();
 
-        Task<Team?> GetTeamAsync(int teamId, bool includeUsers);
+        Task<Team?> GetTeamAsync(int teamId, bool includeUsers, bool includeProjects);
 
         Task AddTeamAsync( Team team);
+
+
+        Task<Project?> GetProjectAsync(int projectId);
+
+        Task AddProjectAsync(Project project);
 
         Task<bool> SaveChangesAsync();
 

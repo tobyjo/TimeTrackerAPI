@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using TimeTracker.API.Entities;
 using TimeTracker.API.Models;
+using TimeTracker.API.Services;
 
 namespace TimeTracker.API.Controllers
 {
@@ -8,12 +11,16 @@ namespace TimeTracker.API.Controllers
     [Route("api/project")]
     public class ProjectController : ControllerBase
     {
-        private readonly TimeTrackerDataStore _store;
-        public ProjectController(TimeTrackerDataStore store)
+        private readonly ITimeTrackerRepository timeTrackerRepository;
+        private readonly IMapper mapper;
+
+        public ProjectController(ITimeTrackerRepository timeTrackerRepository, IMapper mapper)
         {
-            _store = store;
+            this.timeTrackerRepository = timeTrackerRepository ?? throw new ArgumentNullException(nameof(timeTrackerRepository));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
- 
+
+        /*
 
         [HttpGet]
         public ActionResult<IEnumerable<ProjectDto>> Get([FromQuery] int? projectId)
@@ -28,6 +35,42 @@ namespace TimeTracker.API.Controllers
 
             return Ok(projects);
         }
+        */
+
+        // TODO - Get project for AddProject can refer to it in response
+
+        [HttpGet("{id}", Name = "GetProject")]
+        public async Task<IActionResult> GetProject(int id)
+        {
+            var project = await timeTrackerRepository.GetProjectAsync(id);
+
+            if (project == null)
+                return NotFound();
+
+            var projectResult = mapper.Map<ProjectDto>(project);
+            return Ok(projectResult);
+        }
+
+       [HttpPost]
+        public async Task<ActionResult<ProjectDto>> CreateProject(ProjectForCreationDto project)
+        {
+            // map to entity
+            var projectEntity = mapper.Map<Entities.Project>(project);
+
+            await timeTrackerRepository.AddProjectAsync(projectEntity);
+            await timeTrackerRepository.SaveChangesAsync();
+
+            // return the created team
+            var createdProjectToReturn = mapper.Map<ProjectDto>(projectEntity);
+            return CreatedAtRoute("GetProject",
+                new { id = createdProjectToReturn.Id },
+                createdProjectToReturn);
+        }
+
+
+
+
+
         /*
 
         [HttpGet]

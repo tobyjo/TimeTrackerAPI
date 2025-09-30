@@ -18,20 +18,21 @@ namespace TimeTracker.API.Services
             return await _context.Teams.OrderBy(t => t.TeamName).ToListAsync();
         }
 
-        public async Task<Team?> GetTeamAsync(int teamId, bool includeUsers)
+        public async Task<Team?> GetTeamAsync(int teamId, bool includeUsers, bool includeProjects)
         {
-            if( includeUsers)
-            {   var teamWithUsers = await _context.Teams
-                    .Include(t => t.Users)
-                    .Where(t => t.Id == teamId).FirstOrDefaultAsync();
-                return teamWithUsers;
-            }
-            else
+            IQueryable<Team> query = _context.Teams;
+
+            if (includeUsers)
             {
-                var teamWithoutUsers = await _context.Teams
-                    .Where(t => t.Id == teamId).FirstOrDefaultAsync();
-                return teamWithoutUsers;
+                query = query.Include(t => t.Users);
             }
+
+            if (includeProjects)
+            {
+                query = query.Include(t => t.Projects);
+            }
+
+            return await query.FirstOrDefaultAsync(t => t.Id == teamId);
         }
 
         public async Task AddTeamAsync(Team team)
@@ -39,6 +40,19 @@ namespace TimeTracker.API.Services
 
             // Add team to context
             await _context.Teams.AddAsync(team);
+
+        }
+
+        public Task<Project?> GetProjectAsync(int projectId)
+        {
+            return _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+        }
+
+        public async Task AddProjectAsync(Project project)
+        {
+
+            // Add team to context
+            await _context.Projects.AddAsync(project);
 
         }
 
