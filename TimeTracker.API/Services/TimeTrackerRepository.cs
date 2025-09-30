@@ -43,9 +43,9 @@ namespace TimeTracker.API.Services
 
         }
 
-        public Task<Project?> GetProjectAsync(int projectId)
+        public async Task<Project?> GetProjectAsync(int projectId)
         {
-            return _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+            return await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
         }
 
         public async Task AddProjectAsync(Project project)
@@ -55,6 +55,35 @@ namespace TimeTracker.API.Services
             await _context.Projects.AddAsync(project);
 
         }
+
+        public async Task<User?> GetUserAsync(int userId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+        public async Task<User?> GetUserWithTimeEntriesAsync(int userId)
+        {
+            IQueryable<User> query = _context.Users;
+
+            // TODO Could further filter on dates etc
+            query = query.Include(te => te.TimeEntries);
+        
+          
+            return await query.FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+        public async Task<User?> GetUserWithProjectsAsync(int userId)
+        {  
+            // User only has one team and the user entity only has a teamId. We use that to get the list of projects for the Team.
+            // Include the Team and then the Projects for that Team
+            return await _context.Users
+                .Include(u => u.Team)
+                    .ThenInclude(t => t.Projects)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+
+
 
         public async Task<bool> SaveChangesAsync()
         {

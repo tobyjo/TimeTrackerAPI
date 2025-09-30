@@ -21,6 +21,8 @@ namespace TimeTracker.API.Controllers
         //[HttpGet]
         //public IEnumerable<TimeEntryDto> Get() => _store.Data.TimeEntry;
 
+        // TODO: Rewrite from a user persepctive i.e.  api/user/1/timeentries 
+        // https://localhost:7201/api/timeentry?userId=1
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TimeEntryWithDetailsDto>>> Get([FromQuery] int userId)
         {
