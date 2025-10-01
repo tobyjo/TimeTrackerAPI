@@ -21,6 +21,8 @@ namespace TimeTracker.API.Services
 
         Task<User?> GetUserWithProjectsAsync(int userId);
 
+        Task<TimeEntry?> GetTimeEntryAsync(int timeEntryId);
+
         Task<bool> SaveChangesAsync();
 
         Task<IEnumerable<TimeEntry>> GetTimeEntriesAsync();

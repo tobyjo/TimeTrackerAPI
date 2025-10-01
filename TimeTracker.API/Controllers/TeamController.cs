@@ -34,6 +34,39 @@ namespace TimeTracker.API.Controllers
             return Ok(results);
         }
 
+        [HttpGet("{id}/users", Name = "GetTeamWithUsers")]
+        public async Task<IActionResult> GetTeamWithUsers(int id)
+        {
+            var includeUsers = true;
+            var includeProjects = false;
+
+            // We can use same repo call as other api call though
+            var team = await timeTrackerRepository.GetTeamAsync(id, includeUsers, includeProjects);
+            if (team == null)
+                return NotFound();
+        
+            var teamResult = mapper.Map<TeamWithUsersDto>(team);
+            return Ok(teamResult);
+          
+        }
+
+
+        [HttpGet("{id}/projects", Name = "GetTeamWithProjects")]
+        public async Task<IActionResult> GetTeamWithProjects(int id)
+        {
+            var includeUsers = false;
+            var includeProjects = true;
+
+            // We can use same repo call as other api call though
+            var team = await timeTrackerRepository.GetTeamAsync(id, includeUsers, includeProjects);
+            if (team == null)
+                return NotFound();
+
+            var teamResult = mapper.Map<TeamWithProjectsDto>(team);
+            return Ok(teamResult);
+
+        }
+
         // Return IActionResult as we dont know which DTO will be returned so go basic
         // - see "Demo: Returning Data from the Repository ... Part 2
         [HttpGet("{id}", Name ="GetTeam")]

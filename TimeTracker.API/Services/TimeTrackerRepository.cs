@@ -65,10 +65,13 @@ namespace TimeTracker.API.Services
         {
             IQueryable<User> query = _context.Users;
 
-            // TODO Could further filter on dates etc
-            query = query.Include(te => te.TimeEntries);
-        
-          
+            // Include TimeEntries and their SegmentType and Project details
+            query = query
+                .Include(u => u.TimeEntries)
+                    .ThenInclude(te => te.SegmentType)
+                .Include(u => u.TimeEntries)
+                    .ThenInclude(te => te.Project);
+
             return await query.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
@@ -83,7 +86,14 @@ namespace TimeTracker.API.Services
         }
 
 
-
+        public async Task<TimeEntry?> GetTimeEntryAsync(int timeEntryId)
+        {
+            return await _context.TimeEntries
+                 .Include(te => te.Project)
+                 .Include(te => te.SegmentType)
+                 .Include(te => te.User)
+                 .FirstOrDefaultAsync(te => te.Id == timeEntryId);
+        }
 
         public async Task<bool> SaveChangesAsync()
         {

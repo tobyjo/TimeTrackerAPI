@@ -42,6 +42,13 @@ namespace TimeTracker.API.Controllers
             var userResult = mapper.Map<UserWithTimeEntriesDto>(user);
             return Ok(userResult);
 
+
+
+            /*
+                   var entries = await timeTrackerRepository.GetTimeEntriesForUserAsync(userId, true);
+            return Ok(mapper.Map<IEnumerable<TimeEntryWithDetailsDto>>(entries));
+            */
+
         }
 
         [HttpGet("{id}/projects", Name = "GetUserWithProjects")]

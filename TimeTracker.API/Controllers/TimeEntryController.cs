@@ -18,34 +18,15 @@ namespace TimeTracker.API.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        //[HttpGet]
-        //public IEnumerable<TimeEntryDto> Get() => _store.Data.TimeEntry;
-
-        // TODO: Rewrite from a user persepctive i.e.  api/user/1/timeentries 
-        // https://localhost:7201/api/timeentry?userId=1
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TimeEntryWithDetailsDto>>> Get([FromQuery] int userId)
+        [HttpGet("{id}", Name = "GetTimeEntry")]
+        public async Task<IActionResult> GetTimeEntry(int id)
         {
-            //var entries = _store.Data.TimeEntry;
-            var entries = await timeTrackerRepository.GetTimeEntriesForUserAsync(userId, true);
-            return Ok(mapper.Map<IEnumerable<TimeEntryWithDetailsDto>>(entries));
+            var timeEntry = await timeTrackerRepository.GetTimeEntryAsync(id);
+            if (timeEntry == null)
+                return NotFound();
 
-            /*
-            var results = new List<TimeEntryWithDetailsDto>();
-            foreach(var entry in entries)
-            {
-                results.Add(new TimeEntryWithDetailsDto
-                {
-                    StartDateTime = entry.StartDateTime,
-                    EndDateTime = entry.EndDateTime,
-                    UserID = entry.UserId,
-                    ProjectCode = entry.Project.Code,
-                    ProjectDescription = entry.Project.Description,
-                    SegmentTypeName = entry.SegmentType.Name
-                });
-            }
-               return Ok(results);
-            */
+            var timeEntryResult = mapper.Map<TimeEntryWithDetailsDto>(timeEntry);
+            return Ok(timeEntryResult);
 
         }
 
