@@ -71,15 +71,18 @@ namespace TimeTracker.API.DbContexts
             modelBuilder.Entity<SegmentType>()
              .HasData(new SegmentType("Meeting")
              {
-                 Id = 1
+                 Id = 1,
+                 TeamId = 1
              },
              new SegmentType("Calls")
              {
-                 Id = 2
+                 Id = 2,
+                 TeamId = 1
              },             
              new SegmentType("Planning")
              {
-                 Id = 3
+                 Id = 3,
+                 TeamId = 1
              }
              );
 

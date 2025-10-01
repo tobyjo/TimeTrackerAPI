@@ -30,5 +30,21 @@ namespace TimeTracker.API.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<ActionResult<TimeEntryDto>> CreateTimeEntry(TimeEntryForCreationDto timeEntry)
+        {
+            // map to entity
+            var timeEntryEntity = mapper.Map<Entities.TimeEntry>(timeEntry);
+
+            await timeTrackerRepository.AddTimeEntryAsync(timeEntryEntity);
+            await timeTrackerRepository.SaveChangesAsync();
+
+            // return the created team
+            var createdTimeEntryToReturn = mapper.Map<TimeEntryDto>(timeEntryEntity);
+            return CreatedAtRoute("GetTimeEntry",
+                new { id = createdTimeEntryToReturn.Id },
+                createdTimeEntryToReturn);
+        }
+
     }
 }

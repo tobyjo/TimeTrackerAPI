@@ -12,7 +12,12 @@ namespace TimeTracker.API.Profiles
             CreateMap<Entities.TimeEntry, Models.TimeEntryDto>();
 
 
-
+            // From DTO to database
+            CreateMap<Models.TimeEntryForCreationDto, Entities.TimeEntry>()
+                .ForMember(dest => dest.Project, opt => opt.Ignore())
+                .ForMember(dest => dest.SegmentType, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
 
             // CreateMap<Models.TimeEntryDto, Entities.TimeEntry>();
             // CreateMap<Models.ProjectDto, Entities.Project>();

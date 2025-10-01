@@ -79,7 +79,12 @@ namespace TimeTracker.API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TeamId");
 
                     b.ToTable("SegmentTypes");
 
@@ -87,17 +92,20 @@ namespace TimeTracker.API.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Meeting"
+                            Name = "Meeting",
+                            TeamId = 1
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Calls"
+                            Name = "Calls",
+                            TeamId = 1
                         },
                         new
                         {
                             Id = 3,
-                            Name = "Planning"
+                            Name = "Planning",
+                            TeamId = 1
                         });
                 });
 
@@ -239,6 +247,17 @@ namespace TimeTracker.API.Migrations
                         .WithMany("Projects")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("TimeTracker.API.Entities.SegmentType", b =>
+                {
+                    b.HasOne("TimeTracker.API.Entities.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Team");

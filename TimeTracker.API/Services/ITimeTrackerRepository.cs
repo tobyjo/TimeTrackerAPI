@@ -23,6 +23,10 @@ namespace TimeTracker.API.Services
 
         Task<TimeEntry?> GetTimeEntryAsync(int timeEntryId);
 
+        Task AddTimeEntryAsync(TimeEntry timeEntry);
+
+        Task<SegmentType?> GetSegmentTypeAsync(int segmentTypeId);
+
         Task<bool> SaveChangesAsync();
 
         Task<IEnumerable<TimeEntry>> GetTimeEntriesAsync();

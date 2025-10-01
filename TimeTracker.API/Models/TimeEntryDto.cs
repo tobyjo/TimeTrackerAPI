@@ -2,6 +2,7 @@ namespace TimeTracker.API.Models
 {
     public class TimeEntryDto
     {
+        public int Id { get; set; }
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
 

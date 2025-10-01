@@ -95,6 +95,17 @@ namespace TimeTracker.API.Services
                  .FirstOrDefaultAsync(te => te.Id == timeEntryId);
         }
 
+        public async Task AddTimeEntryAsync(TimeEntry timeEntry)
+        {
+            // Add team to context
+            await _context.TimeEntries.AddAsync(timeEntry);
+        }
+
+        public async Task<SegmentType?> GetSegmentTypeAsync(int segmentTypeId)
+        {
+            return await _context.SegmentTypes.FirstOrDefaultAsync(st => st.Id == segmentTypeId);
+        }
+
         public async Task<bool> SaveChangesAsync()
         {
             return (await _context.SaveChangesAsync() >= 0);

@@ -8,24 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TimeTracker.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "SegmentTypes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SegmentTypes", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Teams",
                 columns: table => new
@@ -58,6 +45,26 @@ namespace TimeTracker.API.Migrations
                         principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SegmentTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TeamId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SegmentTypes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SegmentTypes_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -117,16 +124,6 @@ namespace TimeTracker.API.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "SegmentTypes",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "Meeting" },
-                    { 2, "Calls" },
-                    { 3, "Planning" }
-                });
-
-            migrationBuilder.InsertData(
                 table: "Teams",
                 columns: new[] { "Id", "TeamName" },
                 values: new object[] { 1, "BPC" });
@@ -138,6 +135,16 @@ namespace TimeTracker.API.Migrations
                 {
                     { 1, "BPC.001", "Berkshire Primary Care 001", 1 },
                     { 2, "BP", "ARRS", 1 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "SegmentTypes",
+                columns: new[] { "Id", "Name", "TeamId" },
+                values: new object[,]
+                {
+                    { 1, "Meeting", 1 },
+                    { 2, "Calls", 1 },
+                    { 3, "Planning", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -162,6 +169,11 @@ namespace TimeTracker.API.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_TeamId",
                 table: "Projects",
+                column: "TeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SegmentTypes_TeamId",
+                table: "SegmentTypes",
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
