@@ -75,6 +75,18 @@ namespace TimeTracker.API.Services
             return await query.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        public async Task<User?> GetUserWithTimeEntriesWithDateRangeAsync(int userId, DateTime startDateTime, DateTime endDateTime)
+        {
+            IQueryable<User> query = _context.Users;
+            // Include TimeEntries and their SegmentType and Project details
+            query = query
+                .Include(u => u.TimeEntries.Where(te => te.StartDateTime >= startDateTime && te.EndDateTime <= endDateTime))
+                    .ThenInclude(te => te.SegmentType)
+                .Include(u => u.TimeEntries.Where(te => te.StartDateTime >= startDateTime && te.EndDateTime <= endDateTime))
+                    .ThenInclude(te => te.Project);
+            return await query.FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
         public async Task<User?> GetUserWithProjectsAsync(int userId)
         {  
             // User only has one team and the user entity only has a teamId. We use that to get the list of projects for the Team.
@@ -104,6 +116,16 @@ namespace TimeTracker.API.Services
         public async Task<SegmentType?> GetSegmentTypeAsync(int segmentTypeId)
         {
             return await _context.SegmentTypes.FirstOrDefaultAsync(st => st.Id == segmentTypeId);
+        }
+
+        public async Task<User?> GetUserWithSegmentTypesAsync(int userId)
+        {
+            // User only has one team and the user entity only has a teamId. We use that to get the list of segmenttypes for the Team.
+            // Include the Team and then the SegmentTypes for that Team
+            return await _context.Users
+                .Include(u => u.Team)
+                    .ThenInclude(t => t.SegmentTypes)
+                .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<bool> SaveChangesAsync()
@@ -146,15 +168,6 @@ namespace TimeTracker.API.Services
             return await _context.TimeEntries
                   .Where(te => te.UserId == userId).ToListAsync();
         }
-
-        public Task<IEnumerable<Entities.TimeEntry>> GetTimeEntriesForUserWithDateRangeAsync(int userId, DateTime startDateTime, DateTime endDateTime, bool includeChildren)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-
    
     }
 }

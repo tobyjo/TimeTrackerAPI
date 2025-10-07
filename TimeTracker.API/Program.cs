@@ -44,7 +44,7 @@ if (app.Environment.IsDevelopment())
     // For React running locally
     app.UseCors(builder =>
     builder
-        .WithOrigins("http://localhost:5173")
+        .WithOrigins("http://localhost:5173", "http://localhost:5174")
         .AllowAnyMethod()
         .AllowAnyHeader());
 }

@@ -19,6 +19,9 @@ namespace TimeTracker.API.Entities
         // One-to-many: Team has many Projects
         public ICollection<Project> Projects { get; set; } = new List<Project>();
 
+        // One-to-many: Team has many SegmentTypes
+        public ICollection<SegmentType> SegmentTypes { get; set; } = new List<SegmentType>();
+
         public Team( string teamName)
         {
             TeamName = teamName;

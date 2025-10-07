@@ -19,7 +19,11 @@ namespace TimeTracker.API.Services
 
         Task<User?> GetUserWithTimeEntriesAsync(int userId);
 
+        Task<User?> GetUserWithTimeEntriesWithDateRangeAsync( int userId, DateTime startDateTime, DateTime endDateTime);
+
         Task<User?> GetUserWithProjectsAsync(int userId);
+
+        Task<User?> GetUserWithSegmentTypesAsync(int userId);
 
         Task<TimeEntry?> GetTimeEntryAsync(int timeEntryId);
 
@@ -35,6 +39,5 @@ namespace TimeTracker.API.Services
 
         Task<IEnumerable<TimeEntry>> GetTimeEntriesForUserAsync(int userId, bool includeChildren);
 
-        Task<IEnumerable<TimeEntry>> GetTimeEntriesForUserWithDateRangeAsync(int userId, DateTime startDateTime, DateTime endDateTime, bool includeChildren);
     }
 }

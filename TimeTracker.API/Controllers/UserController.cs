@@ -33,8 +33,25 @@ namespace TimeTracker.API.Controllers
 
      
         [HttpGet("{id}/timeentries", Name = "GetUserWithTimeEntries")]
-        public async Task<IActionResult> GetUserWithTimeEntries(int id)
+        public async Task<IActionResult> GetUserWithTimeEntries(
+            int id,
+            [FromQuery] DateTime? startDateTime,
+            [FromQuery] DateTime? endDateTime
+            )
         {
+            // If both dates are provided, filter by range
+            if (startDateTime.HasValue && endDateTime.HasValue)
+            {
+                var entries = await timeTrackerRepository.GetUserWithTimeEntriesWithDateRangeAsync(
+                    id, startDateTime.Value, endDateTime.Value);
+                if( entries == null)
+                {
+                    return NotFound();
+                }
+                var  userResultWithDateTime = mapper.Map<UserWithTimeEntriesDto>(entries);
+                return Ok(userResultWithDateTime);
+            }
+            // Otherwise return all time entries for user
             var user = await timeTrackerRepository.GetUserWithTimeEntriesAsync(id);
             if (user == null)
                 return NotFound();
@@ -59,6 +76,18 @@ namespace TimeTracker.API.Controllers
                 return NotFound();
 
             var userResult = mapper.Map<UserWithProjectsDto>(user);
+            return Ok(userResult);
+
+        }
+
+        [HttpGet("{id}/segmenttypes", Name = "GetUserWithSegmentTypes")]
+        public async Task<IActionResult> GetUserWithSegments(int id)
+        {
+            var user = await timeTrackerRepository.GetUserWithSegmentTypesAsync(id);
+            if (user == null)
+                return NotFound();
+
+            var userResult = mapper.Map<UserWithSegmentTypesDto>(user);
             return Ok(userResult);
 
         }

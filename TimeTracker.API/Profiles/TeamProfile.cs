@@ -18,6 +18,7 @@ namespace TimeTracker.API.Profiles
             CreateMap<Models.TeamForCreationDto, Entities.Team>()
                 .ForMember(dest => dest.Users, opt => opt.Ignore())
                 .ForMember(dest => dest.Projects, opt => opt.Ignore())
+                .ForMember(dest => dest.SegmentTypes, opt => opt.Ignore())
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
         }
     }
