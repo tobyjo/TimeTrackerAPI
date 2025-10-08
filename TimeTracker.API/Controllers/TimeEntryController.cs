@@ -31,7 +31,7 @@ namespace TimeTracker.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TimeEntryDto>> CreateTimeEntry(TimeEntryForCreationDto timeEntry)
+        public async Task<ActionResult<TimeEntryDto>> CreateTimeEntry([FromBody] TimeEntryForCreationDto timeEntry)
         {
             // map to entity
             var timeEntryEntity = mapper.Map<Entities.TimeEntry>(timeEntry);
