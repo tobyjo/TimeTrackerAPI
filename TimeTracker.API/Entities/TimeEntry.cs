@@ -39,6 +39,7 @@ namespace TimeTracker.API.Entities
         [ForeignKey("UserId")]
         public User User { get; set; }
 
+        public TimeEntry() { }
 
         public TimeEntry(DateTime startDateTime, DateTime endDateTime, int projectId, int segmentTypeId, int userId)
         {

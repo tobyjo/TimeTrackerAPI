@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using TimeTracker.API.Entities;
+using TimeTracker.API.Models;
 
 namespace TimeTracker.API.Profiles
 {
@@ -14,10 +16,13 @@ namespace TimeTracker.API.Profiles
 
             // From DTO to database
             CreateMap<Models.TimeEntryForCreationDto, Entities.TimeEntry>()
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
                 .ForMember(dest => dest.Project, opt => opt.Ignore())
                 .ForMember(dest => dest.SegmentType, opt => opt.Ignore())
                 .ForMember(dest => dest.User, opt => opt.Ignore())
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+
 
             // CreateMap<Models.TimeEntryDto, Entities.TimeEntry>();
             // CreateMap<Models.ProjectDto, Entities.Project>();

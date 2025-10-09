@@ -2,7 +2,7 @@
 
 namespace TimeTracker.API.Models
 {
-    public class TimeEntryForCreationDto
+    public class TimeEntryForUpdateDto
     {
         [Required(ErrorMessage = "You should provide a Start Date and Time")]
         public DateTime StartDateTime { get; set; }
@@ -19,6 +19,11 @@ namespace TimeTracker.API.Models
         [Required(ErrorMessage = "You should provide a SegmentType Id")]
         [Range(1, int.MaxValue, ErrorMessage = "SegmentTypeId must be greater than 0")]
         public int SegmentTypeId { get; set; }
+
+
+        [Required(ErrorMessage = "You should provide a UserId")]
+        [Range(1, int.MaxValue, ErrorMessage = "UserId must be greater than 0")]
+        public int UserId { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
