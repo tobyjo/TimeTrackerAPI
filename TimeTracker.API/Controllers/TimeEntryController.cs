@@ -35,6 +35,11 @@ namespace TimeTracker.API.Controllers
         [HttpPost]
         public async Task<ActionResult<TimeEntryDto>> CreateTimeEntry(int userId, [FromBody] TimeEntryForCreationDto timeEntry)
         {
+            if (!await timeTrackerRepository.UserExistsAsync(userId))
+            {
+                return NotFound();
+            }
+
             // map to entity
             var timeEntryEntity = mapper.Map<Entities.TimeEntry>(timeEntry);
             timeEntryEntity.UserId = userId;
@@ -49,25 +54,50 @@ namespace TimeTracker.API.Controllers
                 createdTimeEntryToReturn);
         }
 
-        // Perhaps change this controller to api/user/{userId}/timeentries
-        // This would also mean I trim down the DTO for create so dont need to pass in userId
-        /*
 
-        [HttpPut("")]
-        public async Task<ActionResult<TimeEntryDto>> UpdateTimeEntry([FromBody] TimeEntryForCreationDto timeEntry)
+
+        [HttpPut("{timeentryid}")]
+        public async Task<ActionResult> UpdateTimeEntry(int userId, int timeEntryid, [FromBody] TimeEntryForUpdateDto timeEntry)
         {
-            // map to entity
-            var timeEntryEntity = mapper.Map<Entities.TimeEntry>(timeEntry);
+            if(! await timeTrackerRepository.UserExistsAsync(userId))
+            {
+                return NotFound();
+            }
 
-            await timeTrackerRepository.AddTimeEntryAsync(timeEntryEntity);
+            var timeEntryEntity = await timeTrackerRepository.GetTimeEntryAsync(timeEntryid);
+            if( timeEntryEntity == null )
+            {
+                return NotFound();
+            }
+
+            // Overwrite properties from db with those from incoming object
+            mapper.Map(timeEntry, timeEntryEntity);
             await timeTrackerRepository.SaveChangesAsync();
 
-            // return the created team
-            var createdTimeEntryToReturn = mapper.Map<TimeEntryDto>(timeEntryEntity);
-            return CreatedAtRoute("GetTimeEntry",
-                new { id = createdTimeEntryToReturn.Id },
-                createdTimeEntryToReturn);
+            return NoContent();
+
         }
-        */
+
+        [HttpDelete("{timeentryid}")]
+        public async Task<ActionResult> DeleteTimeEntry(int userId, int timeEntryid)
+        {
+            if (!await timeTrackerRepository.UserExistsAsync(userId))
+            {
+                return NotFound();
+            }
+            var timeEntryEntity = await timeTrackerRepository.GetTimeEntryAsync(timeEntryid);
+            if (timeEntryEntity == null)
+            {
+                return NotFound();
+            }
+    
+            // At this point context has timeentry in memory so no need for an async call here
+            timeTrackerRepository.DeleteTimeEntry(timeEntryEntity);
+
+            // And async required to write to db
+            await timeTrackerRepository.SaveChangesAsync();
+            return NoContent();
+        }
+
     }
 }

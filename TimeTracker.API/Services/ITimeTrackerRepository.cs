@@ -1,4 +1,5 @@
-﻿using TimeTracker.API.Entities;
+﻿using System.Threading.Tasks;
+using TimeTracker.API.Entities;
 
 namespace TimeTracker.API.Services
 {
@@ -17,6 +18,8 @@ namespace TimeTracker.API.Services
 
         Task<User?> GetUserAsync(int userId );
 
+        Task<bool> UserExistsAsync(int userId);
+
         Task<User?> GetUserWithTimeEntriesAsync(int userId);
 
         Task<User?> GetUserWithTimeEntriesWithDateRangeAsync( int userId, DateTime startDateTime, DateTime endDateTime);
@@ -28,6 +31,8 @@ namespace TimeTracker.API.Services
         Task<TimeEntry?> GetTimeEntryAsync(int timeEntryId);
 
         Task AddTimeEntryAsync(TimeEntry timeEntry);
+
+        void DeleteTimeEntry(TimeEntry timeEntry);
 
         Task<SegmentType?> GetSegmentTypeAsync(int segmentTypeId);
 

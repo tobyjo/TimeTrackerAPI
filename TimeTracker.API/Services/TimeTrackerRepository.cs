@@ -61,6 +61,11 @@ namespace TimeTracker.API.Services
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        public async Task<bool> UserExistsAsync(int userId)
+        {
+            return await _context.Users.AnyAsync(u => u.Id == userId);
+        }
+
         public async Task<User?> GetUserWithTimeEntriesAsync(int userId)
         {
             IQueryable<User> query = _context.Users;
@@ -112,6 +117,12 @@ namespace TimeTracker.API.Services
             // Add team to context
             await _context.TimeEntries.AddAsync(timeEntry);
         }
+
+        public void DeleteTimeEntry(TimeEntry timeEntry)
+        {
+            _context.TimeEntries.Remove(timeEntry);
+        }
+
 
         public async Task<SegmentType?> GetSegmentTypeAsync(int segmentTypeId)
         {
