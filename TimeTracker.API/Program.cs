@@ -1,10 +1,27 @@
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using TimeTracker.API.DbContexts;
 using TimeTracker.API.Services;
-using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Auth0
+var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.Authority = domain;
+    options.Audience = builder.Configuration["Auth0:Audience"];
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        NameClaimType = ClaimTypes.NameIdentifier
+    };
+});
+
 
 // Register as singleton
 builder.Services.AddSingleton<TimeTrackerDataStore>();
@@ -44,13 +61,14 @@ if (app.Environment.IsDevelopment())
     // For React running locally
     app.UseCors(builder =>
     builder
-        .WithOrigins("http://localhost:5173", "http://localhost:5174", "http://192.168.1.13:5173")
+        .WithOrigins("http://localhost:5173", "http://localhost:5174", "http://192.168.1.13:5173", "http://192.168.1.14:5173")
         .AllowAnyMethod()
         .AllowAnyHeader());
 }
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

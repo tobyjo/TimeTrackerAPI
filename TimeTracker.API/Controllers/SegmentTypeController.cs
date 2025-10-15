@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.API.Models;
 using TimeTracker.API.Services;
@@ -19,6 +20,7 @@ namespace TimeTracker.API.Controllers
         }
 
         [HttpGet("{id}", Name = "GetSegmentType")]
+        [Authorize]
         public async Task<IActionResult> GetProject(int id)
         {
             var segmentType = await timeTrackerRepository.GetSegmentTypeAsync(id);
