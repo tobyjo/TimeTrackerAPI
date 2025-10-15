@@ -18,10 +18,6 @@ namespace TimeTracker.API.Models
         [Range(1, int.MaxValue, ErrorMessage = "SegmentTypeId must be greater than 0")]
         public int SegmentTypeId { get; set; }
 
-        [Required(ErrorMessage = "You should provide a UserId")]
-        [MaxLength(255)]
-        public string UserId { get; set; }
-
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (EndDateTime <= StartDateTime)
