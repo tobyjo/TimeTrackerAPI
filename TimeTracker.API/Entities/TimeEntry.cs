@@ -33,7 +33,8 @@ namespace TimeTracker.API.Entities
 
         // Foreign key for User
         [Required]
-        public int UserId { get; set; }
+        [MaxLength(255)]
+        public string UserId { get; set; }
 
         // Navigation property
         [ForeignKey("UserId")]
@@ -41,7 +42,7 @@ namespace TimeTracker.API.Entities
 
         public TimeEntry() { }
 
-        public TimeEntry(DateTime startDateTime, DateTime endDateTime, int projectId, int segmentTypeId, int userId)
+        public TimeEntry(DateTime startDateTime, DateTime endDateTime, int projectId, int segmentTypeId, string userId)
         {
             StartDateTime = startDateTime;
             EndDateTime = endDateTime;

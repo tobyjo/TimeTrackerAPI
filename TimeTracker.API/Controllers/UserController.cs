@@ -20,7 +20,7 @@ namespace TimeTracker.API.Controllers
 
 
         [HttpGet("{id}", Name = "GetUser")]
-        public async Task<IActionResult> GetUser(int id)
+        public async Task<IActionResult> GetUser(string id)
         {
             var user = await timeTrackerRepository.GetUserAsync(id);
             if (user == null)
@@ -34,7 +34,7 @@ namespace TimeTracker.API.Controllers
      
         [HttpGet("{id}/timeentries", Name = "GetUserWithTimeEntries")]
         public async Task<IActionResult> GetUserWithTimeEntries(
-            int id,
+            string id,
             [FromQuery] DateTime? startDateTime,
             [FromQuery] DateTime? endDateTime
             )
@@ -69,7 +69,7 @@ namespace TimeTracker.API.Controllers
         }
 
         [HttpGet("{id}/projects", Name = "GetUserWithProjects")]
-        public async Task<IActionResult> GetUserWithProjects(int id)
+        public async Task<IActionResult> GetUserWithProjects(string id)
         {
             var user = await timeTrackerRepository.GetUserWithProjectsAsync(id);
             if (user == null)
@@ -81,7 +81,7 @@ namespace TimeTracker.API.Controllers
         }
 
         [HttpGet("{id}/segmenttypes", Name = "GetUserWithSegmentTypes")]
-        public async Task<IActionResult> GetUserWithSegments(int id)
+        public async Task<IActionResult> GetUserWithSegments(string id)
         {
             var user = await timeTrackerRepository.GetUserWithSegmentTypesAsync(id);
             if (user == null)

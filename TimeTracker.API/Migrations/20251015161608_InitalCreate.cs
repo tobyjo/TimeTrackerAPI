@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TimeTracker.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitalCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,8 +71,7 @@ namespace TimeTracker.API.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     TeamId = table.Column<int>(type: "int", nullable: false)
@@ -98,7 +97,7 @@ namespace TimeTracker.API.Migrations
                     EndDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
                     SegmentTypeId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -133,8 +132,8 @@ namespace TimeTracker.API.Migrations
                 columns: new[] { "Id", "Code", "Description", "TeamId" },
                 values: new object[,]
                 {
-                    { 1, "BPC.001", "Berkshire Primary Care 001", 1 },
-                    { 2, "BP", "ARRS", 1 }
+                    { 1, "BPC", "Berkshire Primary Care", 1 },
+                    { 2, "Mag House", "Mag House", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -142,9 +141,9 @@ namespace TimeTracker.API.Migrations
                 columns: new[] { "Id", "Name", "TeamId" },
                 values: new object[,]
                 {
-                    { 1, "Meeting", 1 },
-                    { 2, "Calls", 1 },
-                    { 3, "Planning", 1 }
+                    { 1, "Board", 1 },
+                    { 2, "Strategy", 1 },
+                    { 3, "Recall", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -152,8 +151,8 @@ namespace TimeTracker.API.Migrations
                 columns: new[] { "Id", "FullName", "TeamId", "UserName" },
                 values: new object[,]
                 {
-                    { 1, "Kirstine Hall", 1, "kirstine" },
-                    { 2, "Toby Jones", 1, "toby" }
+                    { "auth0|68efba26b0f9e98d45be40b4", "Toby Jones", 1, "toby" },
+                    { "auth0|user1", "Kirstine Hall", 1, "kirstine" }
                 });
 
             migrationBuilder.InsertData(
@@ -161,9 +160,9 @@ namespace TimeTracker.API.Migrations
                 columns: new[] { "Id", "EndDateTime", "ProjectId", "SegmentTypeId", "StartDateTime", "UserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 8, 1, 17, 0, 0, 0, DateTimeKind.Unspecified), 1, 1, new DateTime(2025, 8, 1, 9, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 2, new DateTime(2025, 8, 2, 13, 0, 0, 0, DateTimeKind.Unspecified), 1, 2, new DateTime(2025, 8, 2, 9, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 3, new DateTime(2025, 8, 2, 15, 0, 0, 0, DateTimeKind.Unspecified), 2, 3, new DateTime(2025, 8, 2, 13, 0, 0, 0, DateTimeKind.Unspecified), 1 }
+                    { 1, new DateTime(2025, 8, 1, 17, 0, 0, 0, DateTimeKind.Unspecified), 1, 1, new DateTime(2025, 8, 1, 9, 0, 0, 0, DateTimeKind.Unspecified), "auth0|user1" },
+                    { 2, new DateTime(2025, 8, 2, 13, 0, 0, 0, DateTimeKind.Unspecified), 1, 2, new DateTime(2025, 8, 2, 9, 0, 0, 0, DateTimeKind.Unspecified), "auth0|user1" },
+                    { 3, new DateTime(2025, 8, 2, 15, 0, 0, 0, DateTimeKind.Unspecified), 2, 3, new DateTime(2025, 8, 2, 13, 0, 0, 0, DateTimeKind.Unspecified), "auth0|user1" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -10,20 +10,22 @@ namespace TimeTracker.API.Profiles
         public TimeEntryProfile()
         {
             // From database to DTO
-            CreateMap<Entities.TimeEntry, Models.TimeEntryWithDetailsDto>();
-            CreateMap<Entities.TimeEntry, Models.TimeEntryDto>();
+            CreateMap<Entities.TimeEntry, Models.TimeEntryWithDetailsDto>()
+                .ForMember(dest => dest.UserID, opt => opt.MapFrom(src => src.UserId));
+            CreateMap<Entities.TimeEntry, Models.TimeEntryDto>()
+                .ForMember(dest => dest.UserID, opt => opt.MapFrom(src => src.UserId));
 
 
             // From DTO to database
             CreateMap<Models.TimeEntryForCreationDto, Entities.TimeEntry>()
-                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.Project, opt => opt.Ignore())
                 .ForMember(dest => dest.SegmentType, opt => opt.Ignore())
                 .ForMember(dest => dest.User, opt => opt.Ignore())
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
 
            CreateMap<Models.TimeEntryForUpdateDto, Entities.TimeEntry>()
-          .ForMember(dest => dest.UserId, opt => opt.Ignore())
+          .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
           .ForMember(dest => dest.Project, opt => opt.Ignore())
           .ForMember(dest => dest.SegmentType, opt => opt.Ignore())
           .ForMember(dest => dest.User, opt => opt.Ignore())

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using TimeTracker.API.Entities;
 
 namespace TimeTracker.API.Profiles
@@ -31,7 +30,5 @@ namespace TimeTracker.API.Profiles
                 opt => opt.MapFrom(src => src.Team != null ? src.Team.Projects : new List<Project>())
             );
         }
-
-
     }
 }

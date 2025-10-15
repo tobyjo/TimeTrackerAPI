@@ -12,8 +12,8 @@ using TimeTracker.API.DbContexts;
 namespace TimeTracker.API.Migrations
 {
     [DbContext(typeof(TimeTrackerContext))]
-    [Migration("20251001134058_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20251015161608_InitalCreate")]
+    partial class InitalCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,15 +56,15 @@ namespace TimeTracker.API.Migrations
                         new
                         {
                             Id = 1,
-                            Code = "BPC.001",
-                            Description = "Berkshire Primary Care 001",
+                            Code = "BPC",
+                            Description = "Berkshire Primary Care",
                             TeamId = 1
                         },
                         new
                         {
                             Id = 2,
-                            Code = "BP",
-                            Description = "ARRS",
+                            Code = "Mag House",
+                            Description = "Mag House",
                             TeamId = 1
                         });
                 });
@@ -95,19 +95,19 @@ namespace TimeTracker.API.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Meeting",
+                            Name = "Board",
                             TeamId = 1
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Calls",
+                            Name = "Strategy",
                             TeamId = 1
                         },
                         new
                         {
                             Id = 3,
-                            Name = "Planning",
+                            Name = "Recall",
                             TeamId = 1
                         });
                 });
@@ -157,8 +157,10 @@ namespace TimeTracker.API.Migrations
                     b.Property<DateTime>("StartDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -178,7 +180,7 @@ namespace TimeTracker.API.Migrations
                             ProjectId = 1,
                             SegmentTypeId = 1,
                             StartDateTime = new DateTime(2025, 8, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 1
+                            UserId = "auth0|user1"
                         },
                         new
                         {
@@ -187,7 +189,7 @@ namespace TimeTracker.API.Migrations
                             ProjectId = 1,
                             SegmentTypeId = 2,
                             StartDateTime = new DateTime(2025, 8, 2, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 1
+                            UserId = "auth0|user1"
                         },
                         new
                         {
@@ -196,17 +198,15 @@ namespace TimeTracker.API.Migrations
                             ProjectId = 2,
                             SegmentTypeId = 3,
                             StartDateTime = new DateTime(2025, 8, 2, 13, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 1
+                            UserId = "auth0|user1"
                         });
                 });
 
             modelBuilder.Entity("TimeTracker.API.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -230,14 +230,14 @@ namespace TimeTracker.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = "auth0|user1",
                             FullName = "Kirstine Hall",
                             TeamId = 1,
                             UserName = "kirstine"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = "auth0|68efba26b0f9e98d45be40b4",
                             FullName = "Toby Jones",
                             TeamId = 1,
                             UserName = "toby"
@@ -258,7 +258,7 @@ namespace TimeTracker.API.Migrations
             modelBuilder.Entity("TimeTracker.API.Entities.SegmentType", b =>
                 {
                     b.HasOne("TimeTracker.API.Entities.Team", "Team")
-                        .WithMany()
+                        .WithMany("SegmentTypes")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -317,6 +317,8 @@ namespace TimeTracker.API.Migrations
             modelBuilder.Entity("TimeTracker.API.Entities.Team", b =>
                 {
                     b.Navigation("Projects");
+
+                    b.Navigation("SegmentTypes");
 
                     b.Navigation("Users");
                 });

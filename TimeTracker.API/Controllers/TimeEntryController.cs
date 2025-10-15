@@ -33,7 +33,7 @@ namespace TimeTracker.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TimeEntryDto>> CreateTimeEntry(int userId, [FromBody] TimeEntryForCreationDto timeEntry)
+        public async Task<ActionResult<TimeEntryDto>> CreateTimeEntry(string userId, [FromBody] TimeEntryForCreationDto timeEntry)
         {
             if (!await timeTrackerRepository.UserExistsAsync(userId))
             {
@@ -57,21 +57,22 @@ namespace TimeTracker.API.Controllers
 
 
         [HttpPut("{timeentryid}")]
-        public async Task<ActionResult> UpdateTimeEntry(int userId, int timeEntryid, [FromBody] TimeEntryForUpdateDto timeEntry)
+        public async Task<ActionResult> UpdateTimeEntry(string userId, int timeEntryid, [FromBody] TimeEntryForUpdateDto timeEntry)
         {
-            if(! await timeTrackerRepository.UserExistsAsync(userId))
+            if (!await timeTrackerRepository.UserExistsAsync(userId))
             {
                 return NotFound();
             }
 
             var timeEntryEntity = await timeTrackerRepository.GetTimeEntryAsync(timeEntryid);
-            if( timeEntryEntity == null )
+            if (timeEntryEntity == null)
             {
                 return NotFound();
             }
 
             // Overwrite properties from db with those from incoming object
             mapper.Map(timeEntry, timeEntryEntity);
+            timeEntryEntity.UserId = userId;
             await timeTrackerRepository.SaveChangesAsync();
 
             return NoContent();
@@ -79,7 +80,7 @@ namespace TimeTracker.API.Controllers
         }
 
         [HttpDelete("{timeentryid}")]
-        public async Task<ActionResult> DeleteTimeEntry(int userId, int timeEntryid)
+        public async Task<ActionResult> DeleteTimeEntry(string userId, int timeEntryid)
         {
             if (!await timeTrackerRepository.UserExistsAsync(userId))
             {

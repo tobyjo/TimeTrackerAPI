@@ -9,6 +9,6 @@ namespace TimeTracker.API.Models
         public int ProjectID { get; set; }
         public int SegmentTypeID { get; set; }
 
-        public int UserID { get; set; }
+        public string UserID { get; set; } // Changed from int to string
     }
 }

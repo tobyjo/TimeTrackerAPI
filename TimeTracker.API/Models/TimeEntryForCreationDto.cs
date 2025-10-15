@@ -7,10 +7,8 @@ namespace TimeTracker.API.Models
         [Required(ErrorMessage = "You should provide a Start Date and Time")]
         public DateTime StartDateTime { get; set; }
 
-
         [Required(ErrorMessage = "You should provide an End Date and Time")]
         public DateTime EndDateTime { get; set; }
-
 
         [Required(ErrorMessage = "You should provide a ProjectId")]
         [Range(1, int.MaxValue, ErrorMessage = "ProjectId must be greater than 0")]
@@ -19,6 +17,10 @@ namespace TimeTracker.API.Models
         [Required(ErrorMessage = "You should provide a SegmentType Id")]
         [Range(1, int.MaxValue, ErrorMessage = "SegmentTypeId must be greater than 0")]
         public int SegmentTypeId { get; set; }
+
+        [Required(ErrorMessage = "You should provide a UserId")]
+        [MaxLength(255)]
+        public string UserId { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

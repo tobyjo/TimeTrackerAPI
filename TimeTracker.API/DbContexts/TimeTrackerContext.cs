@@ -28,35 +28,35 @@ namespace TimeTracker.API.DbContexts
                     endDateTime: DateTime.Parse("2025-08-01T17:00:00"),
                     projectId: 1,
                     segmentTypeId: 1,
-                    userId: 1)
+                    userId: "auth0|user1")
                 {Id = 1},
                 new TimeEntry(
                     startDateTime: DateTime.Parse("2025-08-02T09:00:00"), 
                     endDateTime: DateTime.Parse("2025-08-02T13:00:00"),
                     projectId: 1, 
                     segmentTypeId: 2,
-                    userId: 1)
+                    userId: "auth0|user1")
                 {Id = 2},
                    new TimeEntry(
                        DateTime.Parse("2025-08-02T13:00:00"), 
                        DateTime.Parse("2025-08-02T15:00:00"),
                        projectId: 2,
                        segmentTypeId: 3,
-                       userId: 1)
+                       userId: "auth0|user1")
                    {Id = 3}
                 );
 
             modelBuilder.Entity<Project>()
-              .HasData(new Project("BPC.001")
+              .HasData(new Project("BPC")
               {
                   Id = 1,
-                  Description = "Berkshire Primary Care 001",
+                  Description = "Berkshire Primary Care",
                   TeamId = 1
               },
-              new Project("BP")
+              new Project("Mag House")
               {
                   Id = 2,
-                  Description = "ARRS",
+                  Description = "Mag House",
                   TeamId = 1
               }
               );
@@ -69,17 +69,17 @@ namespace TimeTracker.API.DbContexts
              );
 
             modelBuilder.Entity<SegmentType>()
-             .HasData(new SegmentType("Meeting")
+             .HasData(new SegmentType("Board")
              {
                  Id = 1,
                  TeamId = 1
              },
-             new SegmentType("Calls")
+             new SegmentType("Strategy")
              {
                  Id = 2,
                  TeamId = 1
              },             
-             new SegmentType("Planning")
+             new SegmentType("Recall")
              {
                  Id = 3,
                  TeamId = 1
@@ -89,12 +89,12 @@ namespace TimeTracker.API.DbContexts
             modelBuilder.Entity<User>()
            .HasData(new User("kirstine", "Kirstine Hall")
            {
-               Id = 1,
+               Id = "auth0|user1",
                TeamId = 1
            },
            new User("toby", "Toby Jones")
            {
-               Id = 2,
+               Id = "auth0|68efba26b0f9e98d45be40b4",
                TeamId = 1
            }
            );

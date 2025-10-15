@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using TimeTracker.API.Entities;
+using System;
+using System.Collections.Generic;
 
 namespace TimeTracker.API.Services
 {
@@ -16,17 +18,17 @@ namespace TimeTracker.API.Services
 
         Task AddProjectAsync(Project project);
 
-        Task<User?> GetUserAsync(int userId );
+        Task<User?> GetUserAsync(string userId );
 
-        Task<bool> UserExistsAsync(int userId);
+        Task<bool> UserExistsAsync(string userId);
 
-        Task<User?> GetUserWithTimeEntriesAsync(int userId);
+        Task<User?> GetUserWithTimeEntriesAsync(string userId);
 
-        Task<User?> GetUserWithTimeEntriesWithDateRangeAsync( int userId, DateTime startDateTime, DateTime endDateTime);
+        Task<User?> GetUserWithTimeEntriesWithDateRangeAsync( string userId, DateTime startDateTime, DateTime endDateTime);
 
-        Task<User?> GetUserWithProjectsAsync(int userId);
+        Task<User?> GetUserWithProjectsAsync(string userId);
 
-        Task<User?> GetUserWithSegmentTypesAsync(int userId);
+        Task<User?> GetUserWithSegmentTypesAsync(string userId);
 
         Task<TimeEntry?> GetTimeEntryAsync(int timeEntryId);
 
@@ -42,7 +44,7 @@ namespace TimeTracker.API.Services
 
         Task<TimeEntry?> GetTimeEntryAsync(int timeEntryId, bool includeChildren);
 
-        Task<IEnumerable<TimeEntry>> GetTimeEntriesForUserAsync(int userId, bool includeChildren);
+        Task<IEnumerable<TimeEntry>> GetTimeEntriesForUserAsync(string userId, bool includeChildren);
 
     }
 }

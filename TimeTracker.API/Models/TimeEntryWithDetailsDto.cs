@@ -9,7 +9,7 @@ namespace TimeTracker.API.Models
         public string ProjectCode { get; set; } = string.Empty;
 
         public int ProjectID { get; set; }
-        public int UserID { get; set; }
+        public string UserID { get; set; } = string.Empty; // Changed from int to string
         public string ProjectDescription { get; set; } = string.Empty;
 
         public string SegmentTypeName { get; set; } = string.Empty;
