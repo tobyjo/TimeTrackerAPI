@@ -3,12 +3,14 @@ using TimeTracker.API.Services;
 using TimeTracker.API.Models;
 using AutoMapper;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TimeTracker.API.Controllers
 {
     // The controller should really be api/users/{userId}/timeentries but we are doing that in Users controller
     [ApiController]
     [Route("api/users/{userId}/timeentries")]
+    [Authorize]
     public class TimeEntryController : ControllerBase
     {
         private readonly ITimeTrackerRepository timeTrackerRepository;

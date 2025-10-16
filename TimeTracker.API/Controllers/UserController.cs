@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.API.Models;
 using TimeTracker.API.Services;
@@ -7,6 +8,7 @@ namespace TimeTracker.API.Controllers
 {
     [ApiController]
     [Route("api/users")]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly ITimeTrackerRepository timeTrackerRepository;

@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.API.Services;
 using TimeTracker.API.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TimeTracker.API.Controllers
 {
     [ApiController]
     [Route("api/team")]
+    [Authorize]
     public class TeamController : ControllerBase
     {
         private readonly ITimeTrackerRepository timeTrackerRepository;

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.API.Entities;
 using TimeTracker.API.Models;
@@ -9,6 +10,7 @@ namespace TimeTracker.API.Controllers
 
     [ApiController]
     [Route("api/project")]
+    [Authorize]
     public class ProjectController : ControllerBase
     {
         private readonly ITimeTrackerRepository timeTrackerRepository;
