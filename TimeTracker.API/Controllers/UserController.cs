@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.API.Models;
 using TimeTracker.API.Services;
+using System.Security.Claims;
 
 namespace TimeTracker.API.Controllers
 {
@@ -20,10 +21,19 @@ namespace TimeTracker.API.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+        // Helper to check if the route userId matches the authenticated user
+        private bool IsUserAuthorized(string userId)
+        {
+            var authenticatedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return string.Equals(userId, authenticatedUserId, StringComparison.OrdinalIgnoreCase);
+        }
 
         [HttpGet("{id}", Name = "GetUser")]
         public async Task<IActionResult> GetUser(string id)
         {
+            if (!IsUserAuthorized(id))
+                return Forbid();
+
             var user = await timeTrackerRepository.GetUserAsync(id);
             if (user == null)
                 return NotFound();
@@ -33,7 +43,6 @@ namespace TimeTracker.API.Controllers
 
         }
 
-     
         [HttpGet("{id}/timeentries", Name = "GetUserWithTimeEntries")]
         public async Task<IActionResult> GetUserWithTimeEntries(
             string id,
@@ -41,16 +50,19 @@ namespace TimeTracker.API.Controllers
             [FromQuery] DateTime? endDateTime
             )
         {
+            if (!IsUserAuthorized(id))
+                return Forbid();
+
             // If both dates are provided, filter by range
             if (startDateTime.HasValue && endDateTime.HasValue)
             {
                 var entries = await timeTrackerRepository.GetUserWithTimeEntriesWithDateRangeAsync(
                     id, startDateTime.Value, endDateTime.Value);
-                if( entries == null)
+                if (entries == null)
                 {
                     return NotFound();
                 }
-                var  userResultWithDateTime = mapper.Map<UserWithTimeEntriesDto>(entries);
+                var userResultWithDateTime = mapper.Map<UserWithTimeEntriesDto>(entries);
                 return Ok(userResultWithDateTime);
             }
             // Otherwise return all time entries for user
@@ -60,19 +72,14 @@ namespace TimeTracker.API.Controllers
 
             var userResult = mapper.Map<UserWithTimeEntriesDto>(user);
             return Ok(userResult);
-
-
-
-            /*
-                   var entries = await timeTrackerRepository.GetTimeEntriesForUserAsync(userId, true);
-            return Ok(mapper.Map<IEnumerable<TimeEntryWithDetailsDto>>(entries));
-            */
-
         }
 
         [HttpGet("{id}/projects", Name = "GetUserWithProjects")]
         public async Task<IActionResult> GetUserWithProjects(string id)
         {
+            if (!IsUserAuthorized(id))
+                return Forbid();
+
             var user = await timeTrackerRepository.GetUserWithProjectsAsync(id);
             if (user == null)
                 return NotFound();
@@ -85,6 +92,9 @@ namespace TimeTracker.API.Controllers
         [HttpGet("{id}/segmenttypes", Name = "GetUserWithSegmentTypes")]
         public async Task<IActionResult> GetUserWithSegments(string id)
         {
+            if (!IsUserAuthorized(id))
+                return Forbid();
+
             var user = await timeTrackerRepository.GetUserWithSegmentTypesAsync(id);
             if (user == null)
                 return NotFound();

@@ -4,6 +4,7 @@ using TimeTracker.API.Models;
 using AutoMapper;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace TimeTracker.API.Controllers
 {
@@ -22,9 +23,19 @@ namespace TimeTracker.API.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpGet("{id}", Name = "GetTimeEntry")]
-        public async Task<IActionResult> GetTimeEntry(int id)
+        // Helper to check if the route userId matches the authenticated user
+        private bool IsUserAuthorized(string userId)
         {
+            var authenticatedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return string.Equals(userId, authenticatedUserId, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [HttpGet("{id}", Name = "GetTimeEntry")]
+        public async Task<IActionResult> GetTimeEntry(int id, string userId)
+        {
+            if (!IsUserAuthorized(userId))
+                return Forbid();
+
             var timeEntry = await timeTrackerRepository.GetTimeEntryAsync(id);
             if (timeEntry == null)
                 return NotFound();
@@ -37,6 +48,9 @@ namespace TimeTracker.API.Controllers
         [HttpPost]
         public async Task<ActionResult<TimeEntryDto>> CreateTimeEntry(string userId, [FromBody] TimeEntryForCreationDto timeEntry)
         {
+            if (!IsUserAuthorized(userId))
+                return Forbid();
+
             if (!await timeTrackerRepository.UserExistsAsync(userId))
             {
                 return NotFound();
@@ -61,6 +75,9 @@ namespace TimeTracker.API.Controllers
         [HttpPut("{timeentryid}")]
         public async Task<ActionResult> UpdateTimeEntry(string userId, int timeEntryid, [FromBody] TimeEntryForUpdateDto timeEntry)
         {
+            if (!IsUserAuthorized(userId))
+                return Forbid();
+
             if (!await timeTrackerRepository.UserExistsAsync(userId))
             {
                 return NotFound();
@@ -84,6 +101,9 @@ namespace TimeTracker.API.Controllers
         [HttpDelete("{timeentryid}")]
         public async Task<ActionResult> DeleteTimeEntry(string userId, int timeEntryid)
         {
+            if (!IsUserAuthorized(userId))
+                return Forbid();
+
             if (!await timeTrackerRepository.UserExistsAsync(userId))
             {
                 return NotFound();
