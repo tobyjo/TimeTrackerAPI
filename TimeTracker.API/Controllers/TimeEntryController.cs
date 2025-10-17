@@ -22,7 +22,7 @@ namespace TimeTracker.API.Controllers
             this.timeTrackerRepository = timeTrackerRepository ?? throw new ArgumentNullException(nameof(timeTrackerRepository));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-
+        /*****
         // Helper to check if the route userId matches the authenticated user
         private bool IsUserAuthorized(string userId)
         {
@@ -121,6 +121,8 @@ namespace TimeTracker.API.Controllers
             await timeTrackerRepository.SaveChangesAsync();
             return NoContent();
         }
+
+        ***/
 
     }
 }

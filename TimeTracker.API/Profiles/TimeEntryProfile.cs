@@ -25,6 +25,7 @@ namespace TimeTracker.API.Profiles
                 .ForMember(dest => dest.UserId, opt => opt.Ignore());
 
            CreateMap<Models.TimeEntryForUpdateDto, Entities.TimeEntry>()
+          .ForMember(dest => dest.UserId, opt => opt.Ignore())
           .ForMember(dest => dest.Project, opt => opt.Ignore())
           .ForMember(dest => dest.SegmentType, opt => opt.Ignore())
           .ForMember(dest => dest.User, opt => opt.Ignore())
