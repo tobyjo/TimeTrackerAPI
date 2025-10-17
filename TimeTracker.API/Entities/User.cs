@@ -9,13 +9,13 @@ namespace TimeTracker.API.Entities
         [MaxLength(255)]
         public string Id { get; set; }
 
-        [Required]
-        [MaxLength(20)]
-        public string UserName { get; set; }
 
-        [Required]
+        [MaxLength(20)]
+        public string? UserName { get; set; }
+
+
         [MaxLength(50)]
-        public string FullName { get; set; }
+        public string? FullName { get; set; }
 
         [ForeignKey("TeamId")]
         public int TeamId { get; set; }
@@ -24,13 +24,23 @@ namespace TimeTracker.API.Entities
 
         public ICollection<TimeEntry> TimeEntries { get; set; } = new List<TimeEntry>();
 
+        /*
         public User(string userName, string fullName)
         {
             UserName = userName;
             FullName = fullName;
         }
+        */
+
+        public User(string Id) 
+        {
+            this.Id = Id;
+        }
 
         // Parameterless constructor for EF
-        public User() { }
+        public User()
+        {
+         
+        }
     }
 }

@@ -61,6 +61,12 @@ namespace TimeTracker.API.Services
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        public async Task AddUserAsync(User newUser)
+        {
+            // Add user to context
+            await _context.Users.AddAsync(newUser);
+        }
+
         public async Task<bool> UserExistsAsync(string userId)
         {
             return await _context.Users.AnyAsync(u => u.Id == userId);

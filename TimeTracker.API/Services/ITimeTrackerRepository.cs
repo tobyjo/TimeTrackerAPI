@@ -20,6 +20,8 @@ namespace TimeTracker.API.Services
 
         Task<User?> GetUserAsync(string userId );
 
+        Task AddUserAsync(User newUser);
+
         Task<bool> UserExistsAsync(string userId);
 
         Task<User?> GetUserWithTimeEntriesAsync(string userId);

@@ -29,6 +29,20 @@ namespace TimeTracker.API.Profiles
                 dest => dest.Projects,
                 opt => opt.MapFrom(src => src.Team != null ? src.Team.Projects : new List<Project>())
             );
+
+            // From DTO to database
+            // Map UserId to Id and ignore navigation properties
+
+            CreateMap<Models.UserForCreationDto, Entities.User>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.TeamId, opt => opt.Ignore())
+                .ForMember(dest => dest.Team, opt => opt.Ignore())
+                .ForMember(dest => dest.TimeEntries, opt => opt.Ignore())
+                .ForMember(dest => dest.UserName, opt => opt.Ignore())
+                .ForMember(dest => dest.FullName, opt => opt.Ignore());
         }
+
+
+       
     }
 }

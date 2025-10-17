@@ -1,15 +1,16 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using TimeTracker.API.Entities;
 using TimeTracker.API.Models;
 using TimeTracker.API.Services;
-using System.Security.Claims;
 
 namespace TimeTracker.API.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    [Authorize]
+   [Authorize]
     public class UserController : ControllerBase
     {
         private readonly ITimeTrackerRepository timeTrackerRepository;
@@ -42,6 +43,63 @@ namespace TimeTracker.API.Controllers
             return Ok(userResult);
 
         }
+
+        
+        [HttpPost]
+        public async Task<ActionResult<UserDto>> CreateUser( [FromBody] UserForCreationDto newUser)
+        {
+            // Get userId from body
+            if (await timeTrackerRepository.UserExistsAsync(newUser.UserId))
+            {
+                return Conflict("User with the same ID already exists.");
+            }
+
+            if (!IsUserAuthorized(newUser.UserId))
+                return Forbid();
+
+            // map to entity
+            var userEntity = mapper.Map<Entities.User>(newUser);
+
+            await timeTrackerRepository.AddUserAsync(userEntity);
+            await timeTrackerRepository.SaveChangesAsync();
+
+            // return the created user
+            var createdUserToReturn = mapper.Map<UserDto>(userEntity);
+            return CreatedAtRoute("GetUser",
+                new { id = createdUserToReturn.Id },
+                createdUserToReturn);
+
+        }
+        /*
+         *        [HttpPost]
+        public async Task<ActionResult<TimeEntryDto>> CreateTimeEntry(string userId, [FromBody] TimeEntryForCreationDto timeEntry)
+        {
+            if (!IsUserAuthorized(userId))
+                return Forbid();
+
+            if (!await timeTrackerRepository.UserExistsAsync(userId))
+            {
+                return NotFound();
+            }
+
+            // map to entity
+            var timeEntryEntity = mapper.Map<Entities.TimeEntry>(timeEntry);
+            timeEntryEntity.UserId = userId;
+
+            await timeTrackerRepository.AddTimeEntryAsync(timeEntryEntity);
+            await timeTrackerRepository.SaveChangesAsync();
+
+            // return the created team
+            var createdTimeEntryToReturn = mapper.Map<TimeEntryDto>(timeEntryEntity);
+            return CreatedAtRoute("GetTimeEntry",
+                new { userId = createdTimeEntryToReturn.UserID, id = createdTimeEntryToReturn.Id },
+                createdTimeEntryToReturn);
+        }
+
+        */
+
+
+
 
         [HttpGet("{id}/timeentries", Name = "GetUserWithTimeEntries")]
         public async Task<IActionResult> GetUserWithTimeEntries(

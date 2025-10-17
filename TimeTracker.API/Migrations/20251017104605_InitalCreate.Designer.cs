@@ -12,7 +12,7 @@ using TimeTracker.API.DbContexts;
 namespace TimeTracker.API.Migrations
 {
     [DbContext(typeof(TimeTrackerContext))]
-    [Migration("20251015161608_InitalCreate")]
+    [Migration("20251017104605_InitalCreate")]
     partial class InitalCreate
     {
         /// <inheritdoc />
@@ -66,6 +66,41 @@ namespace TimeTracker.API.Migrations
                             Code = "Mag House",
                             Description = "Mag House",
                             TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "GM",
+                            Description = "Green Meadows",
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "KC",
+                            Description = "Kings Corner",
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Code = "Wat",
+                            Description = "Waterfield",
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Code = "BAD",
+                            Description = "BAD PCN",
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Code = "ASC",
+                            Description = "Ascot PCN",
+                            TeamId = 1
                         });
                 });
 
@@ -108,6 +143,36 @@ namespace TimeTracker.API.Migrations
                         {
                             Id = 3,
                             Name = "Recall",
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Accounts",
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Meeting",
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Pharmacy",
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "ARRS",
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Misc",
                             TeamId = 1
                         });
                 });
@@ -171,35 +236,6 @@ namespace TimeTracker.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("TimeEntries");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            EndDateTime = new DateTime(2025, 8, 1, 17, 0, 0, 0, DateTimeKind.Unspecified),
-                            ProjectId = 1,
-                            SegmentTypeId = 1,
-                            StartDateTime = new DateTime(2025, 8, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = "auth0|user1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            EndDateTime = new DateTime(2025, 8, 2, 13, 0, 0, 0, DateTimeKind.Unspecified),
-                            ProjectId = 1,
-                            SegmentTypeId = 2,
-                            StartDateTime = new DateTime(2025, 8, 2, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = "auth0|user1"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            EndDateTime = new DateTime(2025, 8, 2, 15, 0, 0, 0, DateTimeKind.Unspecified),
-                            ProjectId = 2,
-                            SegmentTypeId = 3,
-                            StartDateTime = new DateTime(2025, 8, 2, 13, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = "auth0|user1"
-                        });
                 });
 
             modelBuilder.Entity("TimeTracker.API.Entities.User", b =>
@@ -209,7 +245,6 @@ namespace TimeTracker.API.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("FullName")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -217,7 +252,6 @@ namespace TimeTracker.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -230,17 +264,13 @@ namespace TimeTracker.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "auth0|user1",
-                            FullName = "Kirstine Hall",
-                            TeamId = 1,
-                            UserName = "kirstine"
+                            Id = "auth0|68f21b733a56705ebbc3dab1",
+                            TeamId = 1
                         },
                         new
                         {
                             Id = "auth0|68efba26b0f9e98d45be40b4",
-                            FullName = "Toby Jones",
-                            TeamId = 1,
-                            UserName = "toby"
+                            TeamId = 1
                         });
                 });
 

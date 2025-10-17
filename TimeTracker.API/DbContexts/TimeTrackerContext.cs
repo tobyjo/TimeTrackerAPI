@@ -21,7 +21,7 @@ namespace TimeTracker.API.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-      
+      /*
             modelBuilder.Entity<TimeEntry>()
                 .HasData(new TimeEntry(
                     startDateTime: DateTime.Parse("2025-08-01T09:00:00"),
@@ -45,7 +45,7 @@ namespace TimeTracker.API.DbContexts
                        userId: "auth0|user1")
                    {Id = 3}
                 );
-
+      */
             modelBuilder.Entity<Project>()
               .HasData(new Project("BPC")
               {
@@ -58,7 +58,37 @@ namespace TimeTracker.API.DbContexts
                   Id = 2,
                   Description = "Mag House",
                   TeamId = 1
-              }
+              },
+                new Project("GM")
+                {
+                    Id = 3,
+                    Description = "Green Meadows",
+                    TeamId = 1
+                },
+                  new Project("KC")
+                  {
+                      Id = 4,
+                      Description = "Kings Corner",
+                      TeamId = 1
+                  },
+                   new Project("Wat")
+                   {
+                       Id = 5,
+                       Description = "Waterfield",
+                       TeamId = 1
+                   },
+                   new Project("BAD")
+                   {
+                       Id = 6,
+                       Description = "BAD PCN",
+                       TeamId = 1
+                   },
+                   new Project("ASC")
+                   {
+                       Id = 7,
+                       Description = "Ascot PCN",
+                       TeamId = 1
+                   }
               );
 
             modelBuilder.Entity<Team>()
@@ -83,18 +113,43 @@ namespace TimeTracker.API.DbContexts
              {
                  Id = 3,
                  TeamId = 1
+             },
+             new SegmentType("Accounts")
+             {
+                 Id = 4,
+                 TeamId = 1
+             },
+             new SegmentType("Meeting")
+             {
+                 Id = 5,
+                 TeamId = 1
+             },
+             new SegmentType("Pharmacy")
+             {
+                 Id = 6,
+                 TeamId = 1
+             },
+             new SegmentType("ARRS")
+             {
+                 Id = 7,
+                 TeamId = 1
+             },
+             new SegmentType("Misc")
+             {
+                 Id = 8,
+                 TeamId = 1
              }
              );
 
             modelBuilder.Entity<User>()
-           .HasData(new User("kirstine", "Kirstine Hall")
+           .HasData(new User("auth0|68f21b733a56705ebbc3dab1")
            {
-               Id = "auth0|user1",
+              
                TeamId = 1
            },
-           new User("toby", "Toby Jones")
+           new User("auth0|68efba26b0f9e98d45be40b4")
            {
-               Id = "auth0|68efba26b0f9e98d45be40b4",
+             
                TeamId = 1
            }
            );

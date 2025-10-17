@@ -72,8 +72,8 @@ namespace TimeTracker.API.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    FullName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     TeamId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -133,7 +133,12 @@ namespace TimeTracker.API.Migrations
                 values: new object[,]
                 {
                     { 1, "BPC", "Berkshire Primary Care", 1 },
-                    { 2, "Mag House", "Mag House", 1 }
+                    { 2, "Mag House", "Mag House", 1 },
+                    { 3, "GM", "Green Meadows", 1 },
+                    { 4, "KC", "Kings Corner", 1 },
+                    { 5, "Wat", "Waterfield", 1 },
+                    { 6, "BAD", "BAD PCN", 1 },
+                    { 7, "ASC", "Ascot PCN", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -143,7 +148,12 @@ namespace TimeTracker.API.Migrations
                 {
                     { 1, "Board", 1 },
                     { 2, "Strategy", 1 },
-                    { 3, "Recall", 1 }
+                    { 3, "Recall", 1 },
+                    { 4, "Accounts", 1 },
+                    { 5, "Meeting", 1 },
+                    { 6, "Pharmacy", 1 },
+                    { 7, "ARRS", 1 },
+                    { 8, "Misc", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -151,18 +161,8 @@ namespace TimeTracker.API.Migrations
                 columns: new[] { "Id", "FullName", "TeamId", "UserName" },
                 values: new object[,]
                 {
-                    { "auth0|68efba26b0f9e98d45be40b4", "Toby Jones", 1, "toby" },
-                    { "auth0|user1", "Kirstine Hall", 1, "kirstine" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "TimeEntries",
-                columns: new[] { "Id", "EndDateTime", "ProjectId", "SegmentTypeId", "StartDateTime", "UserId" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2025, 8, 1, 17, 0, 0, 0, DateTimeKind.Unspecified), 1, 1, new DateTime(2025, 8, 1, 9, 0, 0, 0, DateTimeKind.Unspecified), "auth0|user1" },
-                    { 2, new DateTime(2025, 8, 2, 13, 0, 0, 0, DateTimeKind.Unspecified), 1, 2, new DateTime(2025, 8, 2, 9, 0, 0, 0, DateTimeKind.Unspecified), "auth0|user1" },
-                    { 3, new DateTime(2025, 8, 2, 15, 0, 0, 0, DateTimeKind.Unspecified), 2, 3, new DateTime(2025, 8, 2, 13, 0, 0, 0, DateTimeKind.Unspecified), "auth0|user1" }
+                    { "auth0|68efba26b0f9e98d45be40b4", null, 1, null },
+                    { "auth0|68f21b733a56705ebbc3dab1", null, 1, null }
                 });
 
             migrationBuilder.CreateIndex(
