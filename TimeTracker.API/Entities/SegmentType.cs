@@ -13,6 +13,8 @@ namespace TimeTracker.API.Entities
         [MaxLength(50)]
         public string Name { get; set; }
 
+        public bool IsVisible { get; set; } = true;
+
         // Not required as will be found by EF because of ICollection in Team but adds clarity
         // If we use convention we also dont need to label it as foreign key but again, it adds clarity
         [ForeignKey("TeamId")]

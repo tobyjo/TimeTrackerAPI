@@ -12,7 +12,7 @@ using TimeTracker.API.DbContexts;
 namespace TimeTracker.API.Migrations
 {
     [DbContext(typeof(TimeTrackerContext))]
-    [Migration("20251023134350_InitalCreate")]
+    [Migration("20251023164127_InitalCreate")]
     partial class InitalCreate
     {
         /// <inheritdoc />
@@ -43,6 +43,9 @@ namespace TimeTracker.API.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
                     b.Property<int>("TeamId")
                         .HasColumnType("int");
 
@@ -58,6 +61,7 @@ namespace TimeTracker.API.Migrations
                             Id = 1,
                             Code = "BPC",
                             Description = "Berkshire Primary Care",
+                            IsVisible = true,
                             TeamId = 1
                         },
                         new
@@ -65,6 +69,7 @@ namespace TimeTracker.API.Migrations
                             Id = 2,
                             Code = "Mag House",
                             Description = "Mag House",
+                            IsVisible = true,
                             TeamId = 1
                         },
                         new
@@ -72,6 +77,7 @@ namespace TimeTracker.API.Migrations
                             Id = 3,
                             Code = "GM",
                             Description = "Green Meadows",
+                            IsVisible = true,
                             TeamId = 1
                         },
                         new
@@ -79,6 +85,7 @@ namespace TimeTracker.API.Migrations
                             Id = 4,
                             Code = "KC",
                             Description = "Kings Corner",
+                            IsVisible = true,
                             TeamId = 1
                         },
                         new
@@ -86,6 +93,7 @@ namespace TimeTracker.API.Migrations
                             Id = 5,
                             Code = "Wat",
                             Description = "Waterfield",
+                            IsVisible = true,
                             TeamId = 1
                         },
                         new
@@ -93,6 +101,7 @@ namespace TimeTracker.API.Migrations
                             Id = 6,
                             Code = "BAD",
                             Description = "BAD PCN",
+                            IsVisible = true,
                             TeamId = 1
                         },
                         new
@@ -100,6 +109,7 @@ namespace TimeTracker.API.Migrations
                             Id = 7,
                             Code = "ASC",
                             Description = "Ascot PCN",
+                            IsVisible = true,
                             TeamId = 1
                         });
                 });
@@ -111,6 +121,9 @@ namespace TimeTracker.API.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -130,48 +143,56 @@ namespace TimeTracker.API.Migrations
                         new
                         {
                             Id = 1,
+                            IsVisible = true,
                             Name = "Board",
                             TeamId = 1
                         },
                         new
                         {
                             Id = 2,
+                            IsVisible = true,
                             Name = "Strategy",
                             TeamId = 1
                         },
                         new
                         {
                             Id = 3,
+                            IsVisible = true,
                             Name = "Recall",
                             TeamId = 1
                         },
                         new
                         {
                             Id = 4,
+                            IsVisible = true,
                             Name = "Accounts",
                             TeamId = 1
                         },
                         new
                         {
                             Id = 5,
+                            IsVisible = true,
                             Name = "Meeting",
                             TeamId = 1
                         },
                         new
                         {
                             Id = 6,
+                            IsVisible = true,
                             Name = "Pharmacy",
                             TeamId = 1
                         },
                         new
                         {
                             Id = 7,
+                            IsVisible = true,
                             Name = "ARRS",
                             TeamId = 1
                         },
                         new
                         {
                             Id = 8,
+                            IsVisible = true,
                             Name = "Misc",
                             TeamId = 1
                         });

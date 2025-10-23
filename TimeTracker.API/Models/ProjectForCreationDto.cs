@@ -11,6 +11,8 @@ namespace TimeTracker.API.Models
         [MaxLength(200)]
         public string Description { get; set; }
 
+        public bool IsVisible { get; set; } = true;
+
         [Required(ErrorMessage = "You should provide a TeamId")]
         public int TeamId { get; set; }
     }

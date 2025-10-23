@@ -45,7 +45,9 @@ namespace TimeTracker.API.Services
 
         public async Task<Project?> GetProjectAsync(int projectId)
         {
-            return await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+           
+
+            return await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId && p.IsVisible);
         }
 
         public async Task AddProjectAsync(Project project)
@@ -132,7 +134,7 @@ namespace TimeTracker.API.Services
 
         public async Task<SegmentType?> GetSegmentTypeAsync(int segmentTypeId)
         {
-            return await _context.SegmentTypes.FirstOrDefaultAsync(st => st.Id == segmentTypeId);
+            return await _context.SegmentTypes.FirstOrDefaultAsync(st => st.Id == segmentTypeId && st.IsVisible);
         }
 
         public async Task<User?> GetUserWithSegmentTypesAsync(string userId)

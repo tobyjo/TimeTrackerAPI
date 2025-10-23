@@ -34,6 +34,7 @@ namespace TimeTracker.API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Code = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
                     TeamId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -54,6 +55,7 @@ namespace TimeTracker.API.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
                     TeamId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -130,31 +132,31 @@ namespace TimeTracker.API.Migrations
 
             migrationBuilder.InsertData(
                 table: "Projects",
-                columns: new[] { "Id", "Code", "Description", "TeamId" },
+                columns: new[] { "Id", "Code", "Description", "IsVisible", "TeamId" },
                 values: new object[,]
                 {
-                    { 1, "BPC", "Berkshire Primary Care", 1 },
-                    { 2, "Mag House", "Mag House", 1 },
-                    { 3, "GM", "Green Meadows", 1 },
-                    { 4, "KC", "Kings Corner", 1 },
-                    { 5, "Wat", "Waterfield", 1 },
-                    { 6, "BAD", "BAD PCN", 1 },
-                    { 7, "ASC", "Ascot PCN", 1 }
+                    { 1, "BPC", "Berkshire Primary Care", true, 1 },
+                    { 2, "Mag House", "Mag House", true, 1 },
+                    { 3, "GM", "Green Meadows", true, 1 },
+                    { 4, "KC", "Kings Corner", true, 1 },
+                    { 5, "Wat", "Waterfield", true, 1 },
+                    { 6, "BAD", "BAD PCN", true, 1 },
+                    { 7, "ASC", "Ascot PCN", true, 1 }
                 });
 
             migrationBuilder.InsertData(
                 table: "SegmentTypes",
-                columns: new[] { "Id", "Name", "TeamId" },
+                columns: new[] { "Id", "IsVisible", "Name", "TeamId" },
                 values: new object[,]
                 {
-                    { 1, "Board", 1 },
-                    { 2, "Strategy", 1 },
-                    { 3, "Recall", 1 },
-                    { 4, "Accounts", 1 },
-                    { 5, "Meeting", 1 },
-                    { 6, "Pharmacy", 1 },
-                    { 7, "ARRS", 1 },
-                    { 8, "Misc", 1 }
+                    { 1, true, "Board", 1 },
+                    { 2, true, "Strategy", 1 },
+                    { 3, true, "Recall", 1 },
+                    { 4, true, "Accounts", 1 },
+                    { 5, true, "Meeting", 1 },
+                    { 6, true, "Pharmacy", 1 },
+                    { 7, true, "ARRS", 1 },
+                    { 8, true, "Misc", 1 }
                 });
 
             migrationBuilder.InsertData(
