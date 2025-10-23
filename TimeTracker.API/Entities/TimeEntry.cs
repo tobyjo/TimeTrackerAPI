@@ -15,6 +15,9 @@ namespace TimeTracker.API.Entities
         [Required]
         public DateTime EndDateTime { get; set; }
 
+        [MaxLength(300)]
+        public string Note { get; set; }
+
         // Foreign key for Project
         [Required]
         public int ProjectId { get; set; }

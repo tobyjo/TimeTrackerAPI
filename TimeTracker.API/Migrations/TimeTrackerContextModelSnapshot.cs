@@ -210,6 +210,11 @@ namespace TimeTracker.API.Migrations
                     b.Property<DateTime>("EndDateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 

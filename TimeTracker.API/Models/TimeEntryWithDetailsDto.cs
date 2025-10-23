@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace TimeTracker.API.Models
 {
     public class TimeEntryWithDetailsDto
@@ -6,6 +8,8 @@ namespace TimeTracker.API.Models
 
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
+
+        public string Note { get; set; } = string.Empty;
         public string ProjectCode { get; set; } = string.Empty;
 
         public int ProjectID { get; set; }

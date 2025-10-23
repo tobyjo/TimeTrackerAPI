@@ -11,6 +11,9 @@ namespace TimeTracker.API.Models
         [Required(ErrorMessage = "You should provide an End Date and Time")]
         public DateTime EndDateTime { get; set; }
 
+        [MaxLength(300, ErrorMessage = "Note cannot exceed 300 characters")]
+        public string Note { get; set; } = string.Empty;
+
 
         [Required(ErrorMessage = "You should provide a ProjectId")]
         [Range(1, int.MaxValue, ErrorMessage = "ProjectId must be greater than 0")]

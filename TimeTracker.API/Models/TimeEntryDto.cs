@@ -6,6 +6,8 @@ namespace TimeTracker.API.Models
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
 
+        public string Note { get; set; } = string.Empty;
+
         public int ProjectID { get; set; }
         public int SegmentTypeID { get; set; }
 

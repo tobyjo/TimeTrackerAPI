@@ -12,7 +12,7 @@ using TimeTracker.API.DbContexts;
 namespace TimeTracker.API.Migrations
 {
     [DbContext(typeof(TimeTrackerContext))]
-    [Migration("20251017104605_InitalCreate")]
+    [Migration("20251023134350_InitalCreate")]
     partial class InitalCreate
     {
         /// <inheritdoc />
@@ -212,6 +212,11 @@ namespace TimeTracker.API.Migrations
 
                     b.Property<DateTime>("EndDateTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
