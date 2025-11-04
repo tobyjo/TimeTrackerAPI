@@ -55,12 +55,13 @@ namespace TimeTracker.API.Controllers
             return Ok(userResult);
         }
 
+        // tri-state query param: ?isVisible=true|false  (omit for all)
         [HttpGet("projects")]
-        public async Task<IActionResult> GetMyProjects()
+        public async Task<IActionResult> GetMyProjects([FromQuery] bool? isVisible)
         {
             var userId = GetCurrentUserId();
 
-            var user = await timeTrackerRepository.GetUserWithProjectsAsync(userId);
+            var user = await timeTrackerRepository.GetUserWithProjectsAsync(userId, isVisible);
             if (user == null)
                 return NotFound();
 

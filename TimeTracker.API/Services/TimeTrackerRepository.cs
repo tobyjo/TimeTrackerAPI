@@ -100,15 +100,26 @@ namespace TimeTracker.API.Services
             return await query.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-        public async Task<User?> GetUserWithProjectsAsync(string userId)
-        {  
-            // User only has one team and the user entity only has a teamId. We use that to get the list of projects for the Team.
-            // Include the Team and then the Projects for that Team
-            return await _context.Users
-                .Include(u => u.Team)
-                    .ThenInclude(t => t.Projects)
+        // tri-state: null = all projects, true = visible only, false = hidden only
+        public async Task<User?> GetUserWithProjectsAsync(string userId, bool? isVisible = null)
+        {
+            // Start with the include for Team
+            var includeForTeam = _context.Users.Include(u => u.Team);
+
+            if (isVisible.HasValue)
+            {
+                // filtered include for visible or hidden only
+                return await includeForTeam
+                    .ThenInclude(t => t.Projects.Where(p => p.IsVisible == isVisible.Value))
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+            }
+
+            // null => include all projects
+            return await includeForTeam
+                .ThenInclude(t => t.Projects)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
+
 
 
         public async Task<TimeEntry?> GetTimeEntryAsync(int timeEntryId)

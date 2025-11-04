@@ -28,7 +28,9 @@ namespace TimeTracker.API.Services
 
         Task<User?> GetUserWithTimeEntriesWithDateRangeAsync( string userId, DateTime startDateTime, DateTime endDateTime);
 
-        Task<User?> GetUserWithProjectsAsync(string userId);
+
+        // tri-state: null = all, true = visible only, false = hidden only
+        Task<User?> GetUserWithProjectsAsync(string userId, bool? isVisible = null);
 
         Task<User?> GetUserWithSegmentTypesAsync(string userId);
 
