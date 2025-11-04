@@ -69,12 +69,13 @@ namespace TimeTracker.API.Controllers
             return Ok(userResult);
         }
 
+        // tri-state query param: ?isVisible=true|false  (omit for all)
         [HttpGet("segmenttypes", Name = "GetMySegmentTypes")]
-        public async Task<IActionResult> GetUserWithSegments()
+        public async Task<IActionResult> GetMySegmentTypes([FromQuery] bool? isVisible)
         {
             var userId = GetCurrentUserId();
 
-            var user = await timeTrackerRepository.GetUserWithSegmentTypesAsync(userId);
+            var user = await timeTrackerRepository.GetUserWithSegmentTypesAsync(userId, isVisible);
             if (user == null)
                 return NotFound();
 

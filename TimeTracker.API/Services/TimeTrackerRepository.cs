@@ -148,14 +148,30 @@ namespace TimeTracker.API.Services
             return await _context.SegmentTypes.FirstOrDefaultAsync(st => st.Id == segmentTypeId && st.IsVisible);
         }
 
-        public async Task<User?> GetUserWithSegmentTypesAsync(string userId)
+        // tri-state: null = all projects, true = visible only, false = hidden only
+        public async Task<User?> GetUserWithSegmentTypesAsync(string userId, bool? isVisible = null)
         {
             // User only has one team and the user entity only has a teamId. We use that to get the list of segmenttypes for the Team.
             // Include the Team and then the SegmentTypes for that Team
-            return await _context.Users
-                .Include(u => u.Team)
-                    .ThenInclude(t => t.SegmentTypes)
+
+            // Start with the include for Team
+            var includeForTeam = _context.Users.Include(u => u.Team);
+
+            if (isVisible.HasValue)
+            {
+                // filtered include for visible or hidden only
+                return await includeForTeam
+                    .ThenInclude(t => t.SegmentTypes.Where(p => p.IsVisible == isVisible.Value))
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+            }
+
+            // null => include all projects
+            return await includeForTeam
+                .ThenInclude(t => t.SegmentTypes)
                 .FirstOrDefaultAsync(u => u.Id == userId);
+
+   
+    
         }
 
         public async Task<bool> SaveChangesAsync()

@@ -32,7 +32,8 @@ namespace TimeTracker.API.Services
         // tri-state: null = all, true = visible only, false = hidden only
         Task<User?> GetUserWithProjectsAsync(string userId, bool? isVisible = null);
 
-        Task<User?> GetUserWithSegmentTypesAsync(string userId);
+        // tri-state: null = all, true = visible only, false = hidden only
+        Task<User?> GetUserWithSegmentTypesAsync(string userId, bool? isVisible = null);
 
         Task<TimeEntry?> GetTimeEntryAsync(int timeEntryId);
 
