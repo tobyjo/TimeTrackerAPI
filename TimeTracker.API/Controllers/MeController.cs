@@ -62,17 +62,17 @@ namespace TimeTracker.API.Controllers
 
             var project = await timeTrackerRepository.GetProjectAsync(id);
 
+            if (project == null)
+                return NotFound();
+
             // Check that the Team Id matches the users Team ID and of course, that the user exists
             var user = await timeTrackerRepository.GetUserAsync(userId);
-            if (user == null || user.TeamId != id)
+            if (user == null || user.TeamId != project.TeamId)
             {
                 return BadRequest("Invalid TeamId for the current user.");
             }
 
-            if (project == null)
-                return NotFound();
-
-            var projectResult = mapper.Map<ProjectDto>(project);
+                var projectResult = mapper.Map<ProjectDto>(project);
             return Ok(projectResult);
         }
 
@@ -149,6 +149,26 @@ namespace TimeTracker.API.Controllers
 
         }
 
+        [HttpGet("segmenttypes/{id}", Name = "GetSegmentType")]
+        public async Task<IActionResult> GetSegmentType(int id)
+        {
+            var userId = GetCurrentUserId();
+
+            var segmentType = await timeTrackerRepository.GetSegmentTypeAsync(id);
+
+            if (segmentType == null)
+                return NotFound();
+
+            // Check that the Team Id matches the users Team ID and of course, that the user exists
+            var user = await timeTrackerRepository.GetUserAsync(userId);
+            if (user == null || user.TeamId != segmentType.TeamId)
+            {
+                return BadRequest("Invalid TeamId for the current user.");
+            }
+
+            var segmentTypeResult = mapper.Map<SegmentTypeDto>(segmentType);
+            return Ok(segmentTypeResult);
+        }
 
         // tri-state query param: ?isVisible=true|false  (omit for all)
         [HttpGet("segmenttypes", Name = "GetMySegmentTypes")]
@@ -165,7 +185,56 @@ namespace TimeTracker.API.Controllers
 
         }
 
+        [HttpPost("segmenttypes")]
+        public async Task<ActionResult<ProjectDto>> CreateSegmentType(SegmentTypeForCreationDto segmentType)
+        {
+            var userId = GetCurrentUserId();
 
+            // Check that the Team Id matches the users Team ID and of course, that the user exists
+            var user = await timeTrackerRepository.GetUserAsync(userId);
+            if (user == null || user.TeamId != segmentType.TeamId)
+            {
+                return BadRequest("Invalid TeamId for the current user.");
+            }
+
+            // map to entity
+            var segmentTypeEntity = mapper.Map<Entities.SegmentType>(segmentType);
+
+            await timeTrackerRepository.AddSegmentTypeAsync(segmentTypeEntity);
+            await timeTrackerRepository.SaveChangesAsync();
+
+            // return the created team
+            var createdSegmentTypeToReturn = mapper.Map<SegmentTypeDto>(segmentTypeEntity);
+            return CreatedAtRoute("GetSegmentType",
+                new { id = createdSegmentTypeToReturn.Id },
+                createdSegmentTypeToReturn);
+        }
+
+        [HttpPut("segmenttypes/{segmenttypeid}")]
+        public async Task<ActionResult> UpdateSegmentType(int segmentTypeId, [FromBody] SegmentTypeForUpdateDto segmentType)
+        {
+            var userId = GetCurrentUserId();
+
+            // Check that the Team Id matches the users Team ID and of course, that the user exists
+            var user = await timeTrackerRepository.GetUserAsync(userId);
+            if (user == null || user.TeamId != segmentType.TeamId)
+            {
+                return BadRequest("Invalid TeamId for the current user.");
+            }
+
+            var segmentTypeEntity = await timeTrackerRepository.GetSegmentTypeAsync(segmentTypeId);
+            if (segmentTypeEntity is null)
+            {
+                return NotFound();
+            }
+
+            // Overwrite properties from db with those from incoming object
+            mapper.Map(segmentType, segmentTypeEntity);
+            await timeTrackerRepository.SaveChangesAsync();
+
+            return NoContent();
+
+        }
 
 
         [HttpGet("timeentries/{id}", Name = "GetTimeEntry")]

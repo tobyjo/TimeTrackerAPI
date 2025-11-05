@@ -174,6 +174,14 @@ namespace TimeTracker.API.Services
     
         }
 
+        public async Task AddSegmentTypeAsync(SegmentType segmentType)
+        {
+
+            // Add team to context
+            await _context.SegmentTypes.AddAsync(segmentType);
+
+        }
+
         public async Task<bool> SaveChangesAsync()
         {
             return (await _context.SaveChangesAsync() >= 0);
