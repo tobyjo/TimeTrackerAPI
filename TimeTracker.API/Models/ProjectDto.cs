@@ -8,5 +8,7 @@ namespace TimeTracker.API.Models
 
         public bool IsVisible { get; set; } = true;
         public string Description { get; set; } = string.Empty;
+
+        public int TeamId { get; set; }
     }
 }
