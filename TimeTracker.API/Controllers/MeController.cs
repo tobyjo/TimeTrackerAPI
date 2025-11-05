@@ -69,6 +69,66 @@ namespace TimeTracker.API.Controllers
             return Ok(userResult);
         }
 
+        [HttpPost("projects", Name = "GetProject")]
+        public async Task<ActionResult<ProjectDto>> CreateProject(ProjectForCreationDto project)
+        {
+            var userId = GetCurrentUserId();
+
+            /*
+            if (!await timeTrackerRepository.UserExistsAsync(userId))
+            {
+                return NotFound();
+            }
+            */
+
+            // Check that the Team Id matches the users Team ID and of course, that the user exists
+            var user = await timeTrackerRepository.GetUserAsync(userId);
+            if( user == null || user.TeamId != project.TeamId)
+            {
+                return BadRequest("Invalid TeamId for the current user.");
+            }
+
+            // map to entity
+            var projectEntity = mapper.Map<Entities.Project>(project);
+
+            await timeTrackerRepository.AddProjectAsync(projectEntity);
+            await timeTrackerRepository.SaveChangesAsync();
+
+            // return the created team
+            var createdProjectToReturn = mapper.Map<ProjectDto>(projectEntity);
+            return CreatedAtRoute("GetProject",
+                new { id = createdProjectToReturn.Id },
+                createdProjectToReturn);
+        }
+
+
+        [HttpPut("projects/{projectid}")]
+        public async Task<ActionResult> UpdateProject(int projectId, [FromBody] ProjectForUpdateDto project)
+        {
+            var userId = GetCurrentUserId();
+
+            // Check that the Team Id matches the users Team ID and of course, that the user exists
+            var user = await timeTrackerRepository.GetUserAsync(userId);
+            if (user == null || user.TeamId != project.TeamId)
+            {
+                return BadRequest("Invalid TeamId for the current user.");
+            }
+
+            var projectEntity = await timeTrackerRepository.GetProjectAsync(projectId);
+            if ( projectEntity is null)
+            {
+                return NotFound();
+            }
+
+            // Overwrite properties from db with those from incoming object
+            mapper.Map(project, projectEntity);
+            await timeTrackerRepository.SaveChangesAsync();
+
+            return NoContent();
+
+        }
+
+
         // tri-state query param: ?isVisible=true|false  (omit for all)
         [HttpGet("segmenttypes", Name = "GetMySegmentTypes")]
         public async Task<IActionResult> GetMySegmentTypes([FromQuery] bool? isVisible)

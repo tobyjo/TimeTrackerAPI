@@ -41,6 +41,7 @@ namespace TimeTracker.API.Controllers
 
         // TODO - Get project for AddProject can refer to it in response
 
+        /*
         [HttpGet("{id}", Name = "GetProject")]
         public async Task<IActionResult> GetProject(int id)
         {
@@ -68,7 +69,7 @@ namespace TimeTracker.API.Controllers
                 new { id = createdProjectToReturn.Id },
                 createdProjectToReturn);
         }
-
+        */
 
 
 

@@ -14,6 +14,11 @@ namespace TimeTracker.API.Profiles
                   .ForMember(dest => dest.Team, opt => opt.Ignore())
                 .ForMember(dest => dest.TimeEntries, opt => opt.Ignore())
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            CreateMap<Models.ProjectForUpdateDto, Entities.Project>()
+                .ForMember(dest => dest.Team, opt => opt.Ignore())
+                .ForMember(dest => dest.TimeEntries, opt => opt.Ignore())
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
         }
 
 

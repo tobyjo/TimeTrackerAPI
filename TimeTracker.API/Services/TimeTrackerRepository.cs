@@ -47,7 +47,7 @@ namespace TimeTracker.API.Services
         {
            
 
-            return await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId && p.IsVisible);
+            return await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId );
         }
 
         public async Task AddProjectAsync(Project project)
@@ -145,7 +145,7 @@ namespace TimeTracker.API.Services
 
         public async Task<SegmentType?> GetSegmentTypeAsync(int segmentTypeId)
         {
-            return await _context.SegmentTypes.FirstOrDefaultAsync(st => st.Id == segmentTypeId && st.IsVisible);
+            return await _context.SegmentTypes.FirstOrDefaultAsync(st => st.Id == segmentTypeId);
         }
 
         // tri-state: null = all projects, true = visible only, false = hidden only
