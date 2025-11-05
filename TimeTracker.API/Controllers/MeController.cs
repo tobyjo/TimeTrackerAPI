@@ -55,6 +55,27 @@ namespace TimeTracker.API.Controllers
             return Ok(userResult);
         }
 
+        [HttpGet("projects/{id}", Name = "GetProject")]
+        public async Task<IActionResult> GetProject(int id)
+        {
+            var userId = GetCurrentUserId();
+
+            var project = await timeTrackerRepository.GetProjectAsync(id);
+
+            // Check that the Team Id matches the users Team ID and of course, that the user exists
+            var user = await timeTrackerRepository.GetUserAsync(userId);
+            if (user == null || user.TeamId != id)
+            {
+                return BadRequest("Invalid TeamId for the current user.");
+            }
+
+            if (project == null)
+                return NotFound();
+
+            var projectResult = mapper.Map<ProjectDto>(project);
+            return Ok(projectResult);
+        }
+
         // tri-state query param: ?isVisible=true|false  (omit for all)
         [HttpGet("projects")]
         public async Task<IActionResult> GetMyProjects([FromQuery] bool? isVisible)
@@ -69,7 +90,7 @@ namespace TimeTracker.API.Controllers
             return Ok(userResult);
         }
 
-        [HttpPost("projects", Name = "GetProject")]
+        [HttpPost("projects")]
         public async Task<ActionResult<ProjectDto>> CreateProject(ProjectForCreationDto project)
         {
             var userId = GetCurrentUserId();
@@ -143,6 +164,9 @@ namespace TimeTracker.API.Controllers
             return Ok(userResult);
 
         }
+
+
+
 
         [HttpGet("timeentries/{id}", Name = "GetTimeEntry")]
         public async Task<IActionResult> GetTimeEntry(int id)

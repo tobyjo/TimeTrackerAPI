@@ -19,6 +19,8 @@ namespace TimeTracker.API.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+        /*
+
         [HttpGet("{id}", Name = "GetSegmentType")]
         [Authorize]
         public async Task<IActionResult> GetProject(int id)
@@ -31,6 +33,6 @@ namespace TimeTracker.API.Controllers
             var segmentTypeResult = mapper.Map<SegmentTypeDto>(segmentType);
             return Ok(segmentTypeResult);
         }
-
+        */
     }
 }
