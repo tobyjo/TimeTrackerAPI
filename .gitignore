@@ -40,8 +40,15 @@ ScaffoldingReadMe.txt
 *.config.transform
 
 ## Secrets and local settings
-appsettings.Development.json
+# Removed: appsettings.Development.json (now contains local dev config - safe to commit)
+appsettings.Local.json
+*.Local.json
 secrets.json
+.env
+.env.local
+
+## Azure Key Vault Migration Files (temporary)
+.appmod/
 
 ## Others
 *.pidb
