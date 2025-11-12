@@ -11,33 +11,55 @@ using Azure.Extensions.AspNetCore.Configuration.Secrets;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Log startup information
+var logger = LoggerFactory.Create(config => config.AddConsole()).CreateLogger("Startup");
+logger.LogInformation("=== Application Starting ===");
+logger.LogInformation($"Environment: {builder.Environment.EnvironmentName}");
+logger.LogInformation($"ContentRootPath: {builder.Environment.ContentRootPath}");
+
 // Explicitly load appsettings.Local.json if it exists
 var localSettingsPath = Path.Combine(builder.Environment.ContentRootPath, "appsettings.Local.json");
 if (File.Exists(localSettingsPath))
 {
     builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+    logger.LogInformation("? Loaded appsettings.Local.json");
+}
+else
+{
+    logger.LogInformation("appsettings.Local.json not found (expected in production)");
 }
 
 // Configure Azure Key Vault integration
 // This uses DefaultAzureCredential which works both locally (via Azure CLI/Visual Studio) and in Azure (via Managed Identity)
 var keyVaultName = builder.Configuration["Azure:KeyVaultName"];
+logger.LogInformation($"Azure:KeyVaultName from config: '{keyVaultName}'");
+
 if (!string.IsNullOrEmpty(keyVaultName))
 {
     try
     {
         var keyVaultUri = new Uri($"https://{keyVaultName}.vault.azure.net/");
+        logger.LogInformation($"Attempting to connect to Key Vault: {keyVaultUri}");
         builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+        logger.LogInformation($"? Successfully connected to Azure Key Vault: {keyVaultName}");
     }
     catch (Exception ex)
     {
-        // Key Vault connection failed - will fall back to local configuration
-        // To use Key Vault locally, run: az login
+        logger.LogError(ex, $"? Failed to connect to Azure Key Vault: {ex.Message}");
+        logger.LogWarning("Falling back to local configuration");
     }
+}
+else
+{
+    logger.LogInformation("Key Vault not configured. Using local configuration only.");
 }
 
 // Add Auth0
 var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
 var audience = builder.Configuration["Auth0:Audience"];
+
+logger.LogInformation($"Auth0 Domain: {builder.Configuration["Auth0:Domain"]}");
+logger.LogInformation($"Auth0 Audience: {audience}");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
