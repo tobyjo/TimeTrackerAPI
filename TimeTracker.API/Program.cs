@@ -11,6 +11,12 @@ using Azure.Extensions.AspNetCore.Configuration.Secrets;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add file logging provider explicitly for Azure
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.AddEventSourceLogger();
+
 Console.WriteLine("=== STARTUP: Building application ===");
 
 // Explicitly load appsettings.Local.json if it exists
@@ -22,7 +28,6 @@ if (File.Exists(localSettingsPath))
 }
 
 // Configure Azure Key Vault integration
-// This uses DefaultAzureCredential which works both locally (via Azure CLI/Visual Studio) and in Azure (via Managed Identity)
 var keyVaultName = builder.Configuration["Azure:KeyVaultName"];
 Console.WriteLine($"STARTUP: Key Vault Name from config: '{keyVaultName}'");
 
@@ -68,9 +73,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddSingleton<TimeTrackerDataStore>();
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
@@ -78,7 +81,7 @@ builder.Services.AddDbContext<TimeTrackerContext>(dbContextOptions => dbContextO
 
 builder.Services.AddScoped<ITimeTrackerRepository, TimeTrackerRepository>();
 
-// AutoMapper license key now loaded from configuration (can be stored in Key Vault)
+// AutoMapper license key now loaded from configuration
 var autoMapperLicenseKey = builder.Configuration["AutoMapper:LicenseKey"];
 builder.Services.AddAutoMapper(cfg => cfg.LicenseKey = autoMapperLicenseKey, AppDomain.CurrentDomain.GetAssemblies());
 
@@ -86,7 +89,7 @@ Console.WriteLine("STARTUP: Building app...");
 var app = builder.Build();
 Console.WriteLine("STARTUP: App built successfully!");
 
-// Log startup information AFTER app is built (so loggers are initialized)
+// Log startup information
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("=== Application Starting ===");
 logger.LogInformation("Environment: {EnvironmentName}", app.Environment.EnvironmentName);
@@ -120,28 +123,27 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Add a simple health check endpoint for testing
-app.MapGet("/health", (ILogger<Program> logger, IConfiguration config) =>
+// Health check endpoint
+app.MapGet("/health", (ILogger<Program> healthLogger, IConfiguration config) =>
 {
     Console.WriteLine("HEALTH: Health check endpoint called!");
-    logger.LogInformation("Health check endpoint called!");
+    healthLogger.LogInformation("Health check endpoint called!");
  
     return Results.Ok(new
-    {
-        status = "Healthy",
+  {
+      status = "Healthy",
         timestamp = DateTime.UtcNow,
         environment = app.Environment.EnvironmentName,
         keyVaultConfigured = !string.IsNullOrEmpty(keyVaultName),
-        // Diagnostic info
         diagnostics = new
         {
-        keyVaultName = keyVaultName,
-        auth0Domain = config["Auth0:Domain"],
-  auth0Audience = config["Auth0:Audience"],
-    hasConnectionString = !string.IsNullOrEmpty(config.GetConnectionString("TimeTrackerDBConnectionString")),
- hasAutoMapperKey = !string.IsNullOrEmpty(config["AutoMapper:LicenseKey"]),
-            connectionStringLength = config.GetConnectionString("TimeTrackerDBConnectionString")?.Length ?? 0
-}
+keyVaultName = keyVaultName,
+            auth0Domain = config["Auth0:Domain"],
+      auth0Audience = config["Auth0:Audience"],
+        hasConnectionString = !string.IsNullOrEmpty(config.GetConnectionString("TimeTrackerDBConnectionString")),
+            hasAutoMapperKey = !string.IsNullOrEmpty(config["AutoMapper:LicenseKey"]),
+     connectionStringLength = config.GetConnectionString("TimeTrackerDBConnectionString")?.Length ?? 0
+        }
     });
 });
 
