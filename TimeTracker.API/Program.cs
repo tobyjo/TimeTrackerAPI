@@ -98,6 +98,19 @@ logger.LogInformation("Auth0 Domain: {Domain}", builder.Configuration["Auth0:Dom
 
 Console.WriteLine($"STARTUP: Environment: {app.Environment.EnvironmentName}");
 
+// Add request logging middleware
+app.Use(async (context, next) =>
+{
+    var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+    var logMessage = $"{timestamp} - {context.Request.Method} {context.Request.Path}";
+    Console.WriteLine(logMessage);
+    
+    await next();
+    
+    logMessage = $"{timestamp} - {context.Request.Method} {context.Request.Path} - {context.Response.StatusCode}";
+    Console.WriteLine(logMessage);
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -149,5 +162,35 @@ keyVaultName = keyVaultName,
 
 logger.LogInformation("Application configured and ready to handle requests");
 Console.WriteLine("STARTUP: Application configured and ready!");
+
+// Custom in-memory log endpoint for F1 tier (since file logging doesn't work)
+var recentLogs = new List<string>();
+
+app.MapGet("/debug/logs", () =>
+{
+    var debugInfo = new
+    {
+        timestamp = DateTime.UtcNow,
+        logs = recentLogs.TakeLast(50).ToList(),
+        systemInfo = new
+        {
+   environment = app.Environment.EnvironmentName,
+            contentRootPath = app.Environment.ContentRootPath,
+            keyVaultName = keyVaultName,
+            processId = Environment.ProcessId,
+          machineName = Environment.MachineName,
+       osVersion = Environment.OSVersion.ToString(),
+            dotnetVersion = Environment.Version.ToString()
+        }
+    };
+    
+    return Results.Ok(debugInfo);
+});
+
+// Add logs to our collection on startup
+recentLogs.Add($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} - Application started");
+recentLogs.Add($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} - Environment: {app.Environment.EnvironmentName}");
+recentLogs.Add($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} - Key Vault: {keyVaultName ?? "not configured"}");
+recentLogs.Add($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} - Auth0 Domain: {builder.Configuration["Auth0:Domain"]}");
 
 app.Run();
