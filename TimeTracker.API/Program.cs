@@ -11,34 +11,47 @@ using Azure.Extensions.AspNetCore.Configuration.Secrets;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Console.WriteLine("=== STARTUP: Building application ===");
+
 // Explicitly load appsettings.Local.json if it exists
 var localSettingsPath = Path.Combine(builder.Environment.ContentRootPath, "appsettings.Local.json");
 if (File.Exists(localSettingsPath))
 {
     builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+    Console.WriteLine("STARTUP: Loaded appsettings.Local.json");
 }
 
 // Configure Azure Key Vault integration
 // This uses DefaultAzureCredential which works both locally (via Azure CLI/Visual Studio) and in Azure (via Managed Identity)
 var keyVaultName = builder.Configuration["Azure:KeyVaultName"];
+Console.WriteLine($"STARTUP: Key Vault Name from config: '{keyVaultName}'");
 
 if (!string.IsNullOrEmpty(keyVaultName))
 {
     try
     {
         var keyVaultUri = new Uri($"https://{keyVaultName}.vault.azure.net/");
+        Console.WriteLine($"STARTUP: Attempting to connect to Key Vault: {keyVaultUri}");
         builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+        Console.WriteLine("STARTUP: Successfully connected to Key Vault!");
     }
     catch (Exception ex)
     {
-        // Key Vault connection failed - will fall back to local configuration
-        // Exception will be logged by the framework
+        Console.WriteLine($"STARTUP ERROR: Failed to connect to Key Vault: {ex.Message}");
+        Console.WriteLine($"STARTUP ERROR: Stack trace: {ex.StackTrace}");
     }
+}
+else
+{
+    Console.WriteLine("STARTUP: No Key Vault configured");
 }
 
 // Add Auth0
 var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
 var audience = builder.Configuration["Auth0:Audience"];
+
+Console.WriteLine($"STARTUP: Auth0 Domain: {builder.Configuration["Auth0:Domain"]}");
+Console.WriteLine($"STARTUP: Auth0 Audience: {audience}");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
@@ -69,7 +82,9 @@ builder.Services.AddScoped<ITimeTrackerRepository, TimeTrackerRepository>();
 var autoMapperLicenseKey = builder.Configuration["AutoMapper:LicenseKey"];
 builder.Services.AddAutoMapper(cfg => cfg.LicenseKey = autoMapperLicenseKey, AppDomain.CurrentDomain.GetAssemblies());
 
+Console.WriteLine("STARTUP: Building app...");
 var app = builder.Build();
+Console.WriteLine("STARTUP: App built successfully!");
 
 // Log startup information AFTER app is built (so loggers are initialized)
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
@@ -77,6 +92,8 @@ logger.LogInformation("=== Application Starting ===");
 logger.LogInformation("Environment: {EnvironmentName}", app.Environment.EnvironmentName);
 logger.LogInformation("Key Vault Name: {KeyVaultName}", keyVaultName ?? "(not configured)");
 logger.LogInformation("Auth0 Domain: {Domain}", builder.Configuration["Auth0:Domain"]);
+
+Console.WriteLine($"STARTUP: Environment: {app.Environment.EnvironmentName}");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -104,18 +121,31 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Add a simple health check endpoint for testing
-app.MapGet("/health", (ILogger<Program> logger) =>
+app.MapGet("/health", (ILogger<Program> logger, IConfiguration config) =>
 {
+    Console.WriteLine("HEALTH: Health check endpoint called!");
     logger.LogInformation("Health check endpoint called!");
+ 
     return Results.Ok(new
     {
         status = "Healthy",
         timestamp = DateTime.UtcNow,
         environment = app.Environment.EnvironmentName,
-        keyVaultConfigured = !string.IsNullOrEmpty(keyVaultName)
+        keyVaultConfigured = !string.IsNullOrEmpty(keyVaultName),
+        // Diagnostic info
+        diagnostics = new
+        {
+        keyVaultName = keyVaultName,
+        auth0Domain = config["Auth0:Domain"],
+  auth0Audience = config["Auth0:Audience"],
+    hasConnectionString = !string.IsNullOrEmpty(config.GetConnectionString("TimeTrackerDBConnectionString")),
+ hasAutoMapperKey = !string.IsNullOrEmpty(config["AutoMapper:LicenseKey"]),
+            connectionStringLength = config.GetConnectionString("TimeTrackerDBConnectionString")?.Length ?? 0
+}
     });
 });
 
 logger.LogInformation("Application configured and ready to handle requests");
+Console.WriteLine("STARTUP: Application configured and ready!");
 
 app.Run();
