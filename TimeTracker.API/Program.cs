@@ -103,6 +103,19 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Add a simple health check endpoint for testing
+app.MapGet("/health", (ILogger<Program> logger) =>
+{
+    logger.LogInformation("Health check endpoint called!");
+    return Results.Ok(new
+    {
+        status = "Healthy",
+        timestamp = DateTime.UtcNow,
+        environment = app.Environment.EnvironmentName,
+        keyVaultConfigured = !string.IsNullOrEmpty(keyVaultName)
+    });
+});
+
 logger.LogInformation("Application configured and ready to handle requests");
 
 app.Run();
