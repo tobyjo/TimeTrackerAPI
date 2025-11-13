@@ -72,6 +72,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Register as singleton
 builder.Services.AddSingleton<TimeTrackerDataStore>();
 
+// Register in-memory logger for F1 tier
+builder.Services.AddSingleton<IInMemoryLogger, InMemoryLogger>();
+
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -89,6 +92,9 @@ Console.WriteLine("STARTUP: Building app...");
 var app = builder.Build();
 Console.WriteLine("STARTUP: App built successfully!");
 
+// Get the in-memory logger
+var inMemoryLogger = app.Services.GetRequiredService<IInMemoryLogger>();
+
 // Log startup information
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("=== Application Starting ===");
@@ -96,19 +102,27 @@ logger.LogInformation("Environment: {EnvironmentName}", app.Environment.Environm
 logger.LogInformation("Key Vault Name: {KeyVaultName}", keyVaultName ?? "(not configured)");
 logger.LogInformation("Auth0 Domain: {Domain}", builder.Configuration["Auth0:Domain"]);
 
+// Also log to in-memory logger
+inMemoryLogger.Log("Application starting");
+inMemoryLogger.Log($"Environment: {app.Environment.EnvironmentName}");
+inMemoryLogger.Log($"Key Vault: {keyVaultName ?? "not configured"}");
+inMemoryLogger.Log($"Auth0 Domain: {builder.Configuration["Auth0:Domain"]}");
+
 Console.WriteLine($"STARTUP: Environment: {app.Environment.EnvironmentName}");
 
 // Add request logging middleware
 app.Use(async (context, next) =>
 {
     var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-    var logMessage = $"{timestamp} - {context.Request.Method} {context.Request.Path}";
-    Console.WriteLine(logMessage);
+    var logMessage = $"{context.Request.Method} {context.Request.Path}";
+    Console.WriteLine($"{timestamp} - {logMessage}");
+    inMemoryLogger.Log(logMessage);
     
     await next();
     
-    logMessage = $"{timestamp} - {context.Request.Method} {context.Request.Path} - {context.Response.StatusCode}";
-    Console.WriteLine(logMessage);
+    logMessage = $"{context.Request.Method} {context.Request.Path} - {context.Response.StatusCode}";
+    Console.WriteLine($"{timestamp} - {logMessage}");
+    inMemoryLogger.Log($"{logMessage}");
 });
 
 // Configure the HTTP request pipeline.
@@ -137,60 +151,54 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Health check endpoint
-app.MapGet("/health", (ILogger<Program> healthLogger, IConfiguration config) =>
+app.MapGet("/health", (ILogger<Program> healthLogger, IConfiguration config, IInMemoryLogger memLogger) =>
 {
     Console.WriteLine("HEALTH: Health check endpoint called!");
     healthLogger.LogInformation("Health check endpoint called!");
+    memLogger.Log("Health check endpoint called");
  
     return Results.Ok(new
   {
       status = "Healthy",
         timestamp = DateTime.UtcNow,
-        environment = app.Environment.EnvironmentName,
+    environment = app.Environment.EnvironmentName,
         keyVaultConfigured = !string.IsNullOrEmpty(keyVaultName),
-        diagnostics = new
-        {
+    diagnostics = new
+  {
 keyVaultName = keyVaultName,
-            auth0Domain = config["Auth0:Domain"],
+       auth0Domain = config["Auth0:Domain"],
       auth0Audience = config["Auth0:Audience"],
         hasConnectionString = !string.IsNullOrEmpty(config.GetConnectionString("TimeTrackerDBConnectionString")),
-            hasAutoMapperKey = !string.IsNullOrEmpty(config["AutoMapper:LicenseKey"]),
+      hasAutoMapperKey = !string.IsNullOrEmpty(config["AutoMapper:LicenseKey"]),
      connectionStringLength = config.GetConnectionString("TimeTrackerDBConnectionString")?.Length ?? 0
-        }
+   }
     });
 });
 
 logger.LogInformation("Application configured and ready to handle requests");
 Console.WriteLine("STARTUP: Application configured and ready!");
+inMemoryLogger.Log("Application configured and ready to handle requests");
 
-// Custom in-memory log endpoint for F1 tier (since file logging doesn't work)
-var recentLogs = new List<string>();
-
-app.MapGet("/debug/logs", () =>
+// Custom in-memory log endpoint for F1 tier
+app.MapGet("/debug/logs", (IInMemoryLogger memLogger) =>
 {
     var debugInfo = new
     {
-        timestamp = DateTime.UtcNow,
-        logs = recentLogs.TakeLast(50).ToList(),
+     timestamp = DateTime.UtcNow,
+        logs = memLogger.GetRecentLogs(50),
         systemInfo = new
         {
    environment = app.Environment.EnvironmentName,
             contentRootPath = app.Environment.ContentRootPath,
-            keyVaultName = keyVaultName,
-            processId = Environment.ProcessId,
+          keyVaultName = keyVaultName,
+     processId = Environment.ProcessId,
           machineName = Environment.MachineName,
        osVersion = Environment.OSVersion.ToString(),
             dotnetVersion = Environment.Version.ToString()
-        }
+     }
     };
     
     return Results.Ok(debugInfo);
 });
-
-// Add logs to our collection on startup
-recentLogs.Add($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} - Application started");
-recentLogs.Add($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} - Environment: {app.Environment.EnvironmentName}");
-recentLogs.Add($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} - Key Vault: {keyVaultName ?? "not configured"}");
-recentLogs.Add($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} - Auth0 Domain: {builder.Configuration["Auth0:Domain"]}");
 
 app.Run();

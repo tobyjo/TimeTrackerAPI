@@ -16,11 +16,16 @@ namespace TimeTracker.API.Controllers
     {
         private readonly ITimeTrackerRepository timeTrackerRepository;
         private readonly IMapper mapper;
+        private readonly IInMemoryLogger inMemoryLogger;
 
-        public MeController(ITimeTrackerRepository timeTrackerRepository, IMapper mapper)
+        public MeController(
+            ITimeTrackerRepository timeTrackerRepository, 
+            IMapper mapper,
+            IInMemoryLogger inMemoryLogger)
         {
             this.timeTrackerRepository = timeTrackerRepository ?? throw new ArgumentNullException(nameof(timeTrackerRepository));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this.inMemoryLogger = inMemoryLogger ?? throw new ArgumentNullException(nameof(inMemoryLogger));
         }
 
         private string GetCurrentUserId() =>
@@ -33,26 +38,34 @@ namespace TimeTracker.API.Controllers
           )
         {
             var userId = GetCurrentUserId();
+       inMemoryLogger.Log($"GetMeWithTimeEntries called for user: {userId}");
 
-            // If both dates are provided, filter by range
-            if (startDateTime.HasValue && endDateTime.HasValue)
-            {
-                var entries = await timeTrackerRepository.GetUserWithTimeEntriesWithDateRangeAsync(
-                    userId, startDateTime.Value, endDateTime.Value);
-                if (entries == null)
-                {
-                    return NotFound();
-                }
-                var userResultWithDateTime = mapper.Map<UserWithTimeEntriesDto>(entries);
-                return Ok(userResultWithDateTime);
-            }
+    // If both dates are provided, filter by range
+if (startDateTime.HasValue && endDateTime.HasValue)
+   {
+      inMemoryLogger.Log($"Filtering time entries from {startDateTime} to {endDateTime}");
+     var entries = await timeTrackerRepository.GetUserWithTimeEntriesWithDateRangeAsync(
+userId, startDateTime.Value, endDateTime.Value);
+ if (entries == null)
+           {
+     inMemoryLogger.Log($"No entries found for user: {userId}");
+      return NotFound();
+       }
+   var userResultWithDateTime = mapper.Map<UserWithTimeEntriesDto>(entries);
+      inMemoryLogger.Log($"Returning {userResultWithDateTime.TimeEntries?.Count ?? 0} time entries");
+          return Ok(userResultWithDateTime);
+          }
             // Otherwise return all time entries for user
-            var user = await timeTrackerRepository.GetUserWithTimeEntriesAsync(userId);
+        var user = await timeTrackerRepository.GetUserWithTimeEntriesAsync(userId);
             if (user == null)
-                return NotFound();
+        {
+         inMemoryLogger.Log($"User not found: {userId}");
+       return NotFound();
+        }
 
-            var userResult = mapper.Map<UserWithTimeEntriesDto>(user);
-            return Ok(userResult);
+      var userResult = mapper.Map<UserWithTimeEntriesDto>(user);
+            inMemoryLogger.Log($"Returning all time entries for user: {userId}");
+ return Ok(userResult);
         }
 
         [HttpGet("projects/{id}", Name = "GetProject")]
