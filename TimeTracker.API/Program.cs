@@ -179,6 +179,18 @@ logger.LogInformation("Application configured and ready to handle requests");
 Console.WriteLine("STARTUP: Application configured and ready!");
 inMemoryLogger.Log("Application configured and ready to handle requests");
 
+// Test endpoint without authentication (for debugging)
+app.MapGet("/api/test/ping", (IInMemoryLogger memLogger) =>
+{
+    memLogger.Log("Ping endpoint called");
+    return Results.Ok(new
+    {
+        message = "Pong!",
+        timestamp = DateTime.UtcNow,
+        environment = app.Environment.EnvironmentName
+    });
+});
+
 // Custom in-memory log endpoint for F1 tier
 app.MapGet("/debug/logs", (IInMemoryLogger memLogger) =>
 {

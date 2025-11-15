@@ -93,14 +93,34 @@ userId, startDateTime.Value, endDateTime.Value);
         [HttpGet("projects")]
         public async Task<IActionResult> GetMyProjects([FromQuery] bool? isVisible)
         {
-            var userId = GetCurrentUserId();
+            try
+            {
+  inMemoryLogger.Log($"GetMyProjects called, isVisible={isVisible}");
+     
+ var userId = GetCurrentUserId();
+        inMemoryLogger.Log($"GetMyProjects: Retrieved userId={userId}");
 
-            var user = await timeTrackerRepository.GetUserWithProjectsAsync(userId, isVisible);
-            if (user == null)
-                return NotFound();
+     var user = await timeTrackerRepository.GetUserWithProjectsAsync(userId, isVisible);
+             
+       if (user == null)
+      {
+       inMemoryLogger.Log($"GetMyProjects: User not found in database: {userId}");
+        return NotFound();
+ }
 
-            var userResult = mapper.Map<UserWithProjectsDto>(user);
-            return Ok(userResult);
+      inMemoryLogger.Log($"GetMyProjects: Found user, TeamId={user.TeamId}");
+     
+          var userResult = mapper.Map<UserWithProjectsDto>(user);
+       inMemoryLogger.Log($"GetMyProjects: Returning {userResult.Projects?.Count ?? 0} projects");
+         
+        return Ok(userResult);
+     }
+         catch (Exception ex)
+            {
+        inMemoryLogger.Log($"GetMyProjects ERROR: {ex.Message}");
+      inMemoryLogger.Log($"GetMyProjects STACK: {ex.StackTrace}");
+       throw;
+    }
         }
 
         [HttpPost("projects")]
