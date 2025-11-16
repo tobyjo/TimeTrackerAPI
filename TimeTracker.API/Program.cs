@@ -134,13 +134,24 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+}
 
-    // For React running locally
-    app.UseCors(builder =>
-    builder
-        .WithOrigins("http://localhost:5173", "http://localhost:5174", "http://192.168.1.13:5173", "http://192.168.1.14:5173")
-        .AllowAnyMethod()
-        .AllowAnyHeader());
+// Configure CORS for all environments (not just Development)
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+if (allowedOrigins != null && allowedOrigins.Length > 0)
+{
+    inMemoryLogger.Log($"CORS: Configuring allowed origins: {string.Join(", ", allowedOrigins)}");
+    
+    app.UseCors(corsBuilder =>
+    corsBuilder
+   .WithOrigins(allowedOrigins)
+      .AllowAnyMethod()
+     .AllowAnyHeader()
+   .AllowCredentials());
+}
+else
+{
+    inMemoryLogger.Log("CORS: No allowed origins configured");
 }
 
 app.UseHttpsRedirection();
